@@ -22,11 +22,24 @@ Com o objetivo de fornecer uma visão detalhada das despesas, o aplicativo permi
 ### 6. Integração com Criptomoedas
 O aplicativo também oferece a **integração com criptomoedas**, permitindo que os usuários acompanhem o valor de suas carteiras de criptomoedas em tempo real.
 
+### 7. Membros Premium
+
+**Personalizar Tipos de Gastos:** Ajuste suas categorias de despesas para refletir melhor seus hábitos financeiros exclusivos.
+
+**Câmbio de Moedas em Tempo Real:** Acompanhe as taxas de câmbio internacionais ao vivo, direto no aplicativo.
+
+**Câmbio de Criptomoedas em Tempo Real:** Monitore o valor das principais criptomoedas em tempo real, sempre atualizado.
+
+**Previsão de Gastos/Lucros Mensais e Anuais:** Antecipe seus movimentos financeiros com projeções precisas para o mês ou ano.
+
+**Gráficos Mais Detalhados:** Explore análises gráficas avançadas para uma visão profunda do seu desempenho financeiro.
+
+**Comparativo da Carteira de Criptos:** Veja a performance da sua carteira de criptomoedas frente ao mercado, com dados atualizados em tempo real.
+
 ## Tecnologias Utilizadas
 - **Expo:** Plataforma principal para o desenvolvimento do aplicativo.
 - **APIs Financeiras:** Utilizadas para obter cotações em tempo real e integração com bolsas de valores e mercados de criptomoedas.
 - **React Native:** Para construção de interfaces dinâmicas e responsivas.
-
 
 ## Conclusão
 Este aplicativo é uma ferramenta essencial para qualquer pessoa que deseja manter suas finanças organizadas, controlando suas despesas, rendimentos, investimentos em ações e criptomoedas de maneira integrada e fácil de usar. Com um design intuitivo e funcionalidades robustas, ele se destaca como um aliado no controle financeiro pessoal.
@@ -44,7 +57,7 @@ Este aplicativo é uma ferramenta essencial para qualquer pessoa que deseja mant
 2. Start the app
 
    ```bash
-    npx expo start
+   npx expo start
    ```
 
    2.1 Start the app
