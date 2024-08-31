@@ -11,7 +11,7 @@ const Layout = () => {
       <Tabs
         screenOptions={{
           tabBarStyle: {
-            backgroundColor: Colors.grey,
+            backgroundColor: Colors.gray,
             position: "absolute",
             bottom: 40,
             justifyContent: "center",
@@ -30,17 +30,18 @@ const Layout = () => {
           tabBarShowLabel: false,
           tabBarInactiveTintColor: "#999",
           tabBarActiveTintColor: Colors.white,
+          headerShown: false, // Ensure header is hidden in Tabs
         }}
       >
         <Tabs.Screen
-          name="index"
+          name="home"
           options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View
                 style={{
                   padding: 12,
                   borderRadius: 30,
-                  backgroundColor: focused ? Colors.tintColor : Colors.grey,
+                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
                 <SimpleLineIcons name="pie-chart" size={18} color={color} />
@@ -56,7 +57,7 @@ const Layout = () => {
                 style={{
                   padding: 12,
                   borderRadius: 30,
-                  backgroundColor: focused ? Colors.tintColor : Colors.grey,
+                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
                 <AntDesign name="swap" size={18} color={color} />
@@ -72,7 +73,7 @@ const Layout = () => {
                 style={{
                   padding: 12,
                   borderRadius: 30,
-                  backgroundColor: focused ? Colors.tintColor : Colors.grey,
+                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
                 <FontAwesome name="user-o" size={18} color={color} />
