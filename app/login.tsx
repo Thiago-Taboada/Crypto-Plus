@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import Colors from '@/constants/Colors';
 import { TextInputMask } from 'react-native-masked-text';
-
+import userData from '@/data/user.json';
 const Login = () => {
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
@@ -30,14 +30,33 @@ const Login = () => {
   }, [modalVisible]);
 
   const handleLogin = async () => {
-    if (cpf.length === 14 && password.length > 0) {
-      await AsyncStorage.setItem('username', cpf);
-      router.push('/home');
-    } else {
-      setErrorMessage('Por favor insira um CPF e senha válidos.');
+    try {
+      if (cpf.length === 14 && password.length > 0) {
+        // Simular json
+        const user = userData;
+  
+        if (user.CPF === cpf) {
+          await AsyncStorage.setItem('userId', user.id);
+          await AsyncStorage.setItem('userName', user.nome);
+          await AsyncStorage.setItem('userCPF', user.CPF);
+          await AsyncStorage.setItem('userEmail', user.email);
+  
+          router.push('/home');
+        } else {
+          setErrorMessage('CPF ou senha inválidos.');
+          setModalVisible(true);
+        }
+      } else {
+        setErrorMessage('CPF ou senha inválidos.');
+        setModalVisible(true);
+      }
+    } catch (error) {
+      console.error('Error durante o login:', error);
+      setErrorMessage('Ocorreu um erro. Tente novamente.');
       setModalVisible(true);
     }
   };
+  
 
   return (
     <View style={styles.container}>
