@@ -1,22 +1,43 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "@/constants/Colors";
-import { BellNotificationIcon, WalletAddMoneyIcon } from "@/constants/Icons";
+import { BellNotificationIcon } from "@/constants/Icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Header = () => {
+  const [userName, setUserName] = useState<string | null>(null);
+  const getUserData = async () => {
+    try {
+      const name = await AsyncStorage.getItem('userName');
+      if (name !== null) {
+        setUserName(name);
+      } else {
+        console.log('Nome do usuário não encontrado.');
+        setUserName('Usuário');
+      }
+    } catch (error) {
+      console.error('Erro ao recuperar o nome do usuário:', error);
+      setUserName('Usuário');
+    }
+  };
+
+  useEffect(() => {
+    getUserData();
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
-      <View
-        style={styles.wrapper}
-      >
+      <View style={styles.wrapper}>
         <View style={styles.userInfoWrapper}>
           <Image
             source={{ uri: "DOLPHANANA.png" }}
             style={styles.userImg}
           />
           <View style={styles.userTxtWrapper}>
-            <Text style={[styles.userText, { fontSize: 16 }]}>Olá, Dolphanana</Text>
+            <Text style={[styles.userText, { fontSize: 16 }]}>
+              Olá, {userName || 'Usuário'}
+            </Text>
           </View>
         </View>
         <TouchableOpacity
@@ -24,9 +45,8 @@ const Header = () => {
           style={styles.btnWrapper}
         >
           <Text style={styles.btnText}>
-          <BellNotificationIcon width={22} height={22} color={Colors.white} /> My Transactions
+            <BellNotificationIcon width={22} height={22} color={Colors.white} />
           </Text>
-          
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -58,13 +78,13 @@ const styles = StyleSheet.create({
     borderRadius: 30, 
   },
   userTxtWrapper: {
-    marginLeft:10,
+    marginLeft: 10,
   },
   userText: {
     color: Colors.white,
   },
   boldText: {
-    fontWeight:'700',
+    fontWeight: '700',
   },
   btnWrapper: {
     borderColor: "#666",
