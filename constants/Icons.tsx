@@ -9,7 +9,7 @@ import FigmaIcon from "@/assets/icons/logo-figma.svg";
 import ShoopingCartIcon from "@/assets/icons/shopping-cart-line.svg";
 import SpotifyIcon from "@/assets/icons/spotify-logo-light.svg";
 import NetflixIcon from "@/assets/icons/netflix.svg";
-import BellNotificationIcon from "@/assets/icons/bell-notification-ui-svgrepo-com.svg";
+import BellNotificationIcon from "@/assets/icons/bell.svg";
 
 export {
   DollarIcon,
