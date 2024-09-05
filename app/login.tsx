@@ -4,7 +4,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import Colors from '@/constants/Colors';
 import { TextInputMask } from 'react-native-masked-text';
-import userData from '@/data/user.json';
+import users from '@/data/user.json'; 
+
+interface User {
+  id: string;
+  nome: string;
+  CPF: string;
+  email: string;
+}
+
+const usersTyped: User[] = users as User[];
+
 const Login = () => {
   const [cpf, setCpf] = useState('');
   const [password, setPassword] = useState('');
@@ -14,33 +24,24 @@ const Login = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (modalVisible) {
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    } else {
-      Animated.timing(fadeAnim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }
+    Animated.timing(fadeAnim, {
+      toValue: modalVisible ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   }, [modalVisible]);
 
   const handleLogin = async () => {
     try {
       if (cpf.length === 14 && password.length > 0) {
-        // Simular json
-        const user = userData;
-  
-        if (user.CPF === cpf) {
+        const user = usersTyped.find(user => user.CPF === cpf);
+
+        if (user) {
           await AsyncStorage.setItem('userId', user.id);
           await AsyncStorage.setItem('userName', user.nome);
           await AsyncStorage.setItem('userCPF', user.CPF);
           await AsyncStorage.setItem('userEmail', user.email);
-  
+
           router.push('/home');
         } else {
           setErrorMessage('CPF ou senha inválidos.');
@@ -56,7 +57,6 @@ const Login = () => {
       setModalVisible(true);
     }
   };
-  
 
   return (
     <View style={styles.container}>
