@@ -4,9 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "@/constants/Colors";
 import { BellNotificationIcon } from "@/constants/Icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from "expo-router";
 
 const Header = () => {
   const [userName, setUserName] = useState<string | null>(null);
+  const router = useRouter();
+
   const getUserData = async () => {
     try {
       const name = await AsyncStorage.getItem('userName');
@@ -30,10 +33,14 @@ const Header = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.wrapper}>
         <View style={styles.userInfoWrapper}>
-          <Image
-            source={{ uri: "DOLPHANANA.png" }}
-            style={styles.userImg}
-          />
+          <TouchableOpacity
+            onPress={() => router.push('/perfil')}
+          >
+            <Image
+              source={{ uri: "DOLPHANANA.png" }}
+              style={styles.userImg}
+            />
+          </TouchableOpacity>
           <View style={styles.userTxtWrapper}>
             <Text style={[styles.userText, { fontSize: 16 }]}>
               Olá, {userName || 'Usuário'}
