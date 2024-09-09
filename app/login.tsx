@@ -42,7 +42,7 @@ const Login = () => {
           await AsyncStorage.setItem('userCPF', user.CPF);
           await AsyncStorage.setItem('userEmail', user.email);
 
-          router.push('/home');
+          router.push('/');
         } else {
           setErrorMessage('CPF ou senha inválidos.');
           setModalVisible(true);
@@ -62,7 +62,7 @@ const Login = () => {
     <View style={styles.container}>
       <View style={styles.innerContainer}>
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Bem vindo!</Text>
+          <Text style={styles.title}>Bem-vindo!</Text>
           <Text style={styles.subtitle}>Entre na sua conta</Text>
         </View>
         <View style={styles.formContainer}>
@@ -88,7 +88,7 @@ const Login = () => {
           </TouchableOpacity>
         </View>
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
       </View>
 
