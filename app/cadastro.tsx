@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Modal, Animated, Alert } from "react-native";
 import Colors from '@/constants/Colors';
-import users from '@/data/user.json';
 import { TextInputMask } from 'react-native-masked-text';
+import { ShowText, HideText } from "@/constants/Icons";
+import { useRouter } from "expo-router";
 
 const Cadastro = () => {
   const [step, setStep] = useState(1);
@@ -13,7 +14,17 @@ const Cadastro = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [errors, setErrors] = useState({
+    cpf: false,
+    email: false,
+    name: false,
+    password: false,
+    confirmPassword: false,
+  });
+  const router = useRouter();
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -34,130 +45,183 @@ const Cadastro = () => {
   };
 
   const validateName = (name: string) => {
-    return name.length >= 8 && name.includes(' ');
+    const nameRegex = /^[A-Za-z\s]{8,}$/;
+    return nameRegex.test(name);
   };
 
-  const checkUniqueUser = (cpf: string, email: string) => {
-    const cpfExists = users.some(user => user.CPF === cpf);
-    const emailExists = users.some(user => user.email === email);
-    return { cpfExists, emailExists };
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
+    return passwordRegex.test(password);
   };
 
   const handleNextStep = () => {
+    let hasErrors = false;
+    const newErrors = {
+      cpf: false,
+      email: false,
+      name: false,
+      password: false,
+      confirmPassword: false,
+    };
+
     if (step === 1) {
       if (!cpf || !email) {
         setErrorMessage('Preencha todos os campos e tente novamente.');
         setModalVisible(true);
-        return;
-      }
-      if (!validateCPF(cpf) || !validateEmail(email)) {
+        hasErrors = true;
+        newErrors.cpf = !cpf;
+        newErrors.email = !email;
+      } else if (!validateCPF(cpf) || !validateEmail(email)) {
         setErrorMessage('Verifique os campos e tente novamente.');
         setModalVisible(true);
-        return;
+        hasErrors = true;
+        newErrors.cpf = !validateCPF(cpf);
+        newErrors.email = !validateEmail(email);
       }
 
-      const { cpfExists, emailExists } = checkUniqueUser(cpf, email);
-      if (cpfExists) {
-        setErrorMessage('CPF já vinculado a uma conta existente.');
-        setModalVisible(true);
-        return;
+      if (!hasErrors) {
+        console.log("Passo 1 ok");
+        // Adicionar aqui lógica para o passo 1
+        setStep(2);
       }
-      if (emailExists) {
-        setErrorMessage('Email vinculado a uma conta existente.');
-        setModalVisible(true);
-        return;
-      }
-
-      setStep(2);
     } else if (step === 2) {
-      if (password !== confirmPassword) {
-        setErrorMessage('Senhas não correspondem.');
-        setModalVisible(true);
-        return;
-      }
       if (!validateName(name)) {
-        setErrorMessage('Nome deve ter pelo menos 8 caracteres e um espaço.');
+        setErrorMessage('O nome deve ter pelo menos 8 letras.');
         setModalVisible(true);
-        return;
+        hasErrors = true;
+        newErrors.name = true;
       }
-      
-      // BUGADOOO
-      // Adiciona o novo usuário ao JSON (ou realiza outra ação necessária)
-      const newUser = { id: generateId(), nome: name, CPF: cpf, email: email, password };
-      users.push(newUser); // Adicione lógica para atualizar o JSON ou enviar ao servidor
 
-      Alert.alert("Cadastro bem-sucedido", "Você foi registrado com sucesso!");
-      // Navega para a página de login ou realiza outra ação
-      // navigation.navigate('Login');
+      if (!hasErrors && !validatePassword(password)) {
+        setErrorMessage('A senha deve ter:');
+        setModalVisible(true);
+        hasErrors = true;
+        newErrors.password = true;
+      }
+
+      if (!hasErrors && password !== confirmPassword) {
+        setErrorMessage('As senhas não correspondem.');
+        setModalVisible(true);
+        hasErrors = true;
+        newErrors.confirmPassword = true;
+      }
+
+      if (!hasErrors) {
+        console.log("Passo 2 ok");
+        // Adicionar aqui lógica para o passo 1
+        Alert.alert("Cadastro bem-sucedido", "Você foi registrado com sucesso!");
+        router.push('/login');
+      }
     }
-  };
 
-  const generateId = () => {
-    return Math.random().toString(36).substr(2, 9);
+    setErrors(newErrors);
   };
 
   return (
     <View style={styles.container}>
       {step === 1 && (
-        <View style={styles.stepContainer}>
-          <Text style={styles.title}>Cadastro - Passo 1</Text>
-          <TextInputMask
-            type={'cpf'}
-            style={styles.input}
-            placeholder="CPF"
-            placeholderTextColor="#fff"
-            keyboardType="numeric"
-            value={cpf}
-            onChangeText={setCpf}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Email"
-            placeholderTextColor="#fff"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleNextStep}
-          >
-            <Text style={styles.buttonText}>Próximo Passo</Text>
-          </TouchableOpacity>
+        <View style={styles.innerContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>Bem-vindo!</Text>
+            <Text style={styles.subtitle}>Crie uma conta!</Text>
+          </View>
+          <View style={styles.formContainer}>
+            <TextInputMask
+              type={'cpf'}
+              style={[styles.input, errors.cpf && styles.inputError]}
+              placeholder="CPF"
+              placeholderTextColor="#fff"
+              keyboardType="numeric"
+              value={cpf}
+              onChangeText={setCpf}
+            />
+            <TextInput
+              style={[styles.input, errors.email && styles.inputError]}
+              placeholder="Email"
+              placeholderTextColor="#fff"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleNextStep}
+            >
+              <Text style={styles.buttonText}>Próximo Passo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.infoText}
+              onPress={() => router.push('/login')}
+            >
+              <Text style={styles.infoTextRegular}>Já possui uma conta? <Text style={styles.infoTextBold}>Faça Login</Text></Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
       {step === 2 && (
-        <View style={styles.stepContainer}>
-          <Text style={styles.title}>Cadastro - Passo 2</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nome"
-            placeholderTextColor="#fff"
-            value={name}
-            onChangeText={setName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            placeholderTextColor="#fff"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Confirme a Senha"
-            placeholderTextColor="#fff"
-            secureTextEntry
-            value={confirmPassword}
-            onChangeText={setConfirmPassword}
-          />
-          <TouchableOpacity
-            style={styles.button}
-            onPress={handleNextStep}
-          >
-            <Text style={styles.buttonText}>Confirmar</Text>
-          </TouchableOpacity>
+        <View style={styles.innerContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.title}>Criar conta</Text>
+          </View>
+          <View style={styles.formContainer}>
+            <TextInput
+              style={[styles.input, errors.name && styles.inputError]}
+              placeholder="Nome"
+              placeholderTextColor="#fff"
+              value={name}
+              onChangeText={setName}
+            />
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={[styles.input, errors.password && styles.inputError]}
+                placeholder="Senha"
+                placeholderTextColor="#fff"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity
+                style={styles.passwordToggle}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <HideText width={24} height={24} color="#fff" /> : <ShowText width={24} height={24} color="#fff" />}
+              </TouchableOpacity>
+            </View>
+            <View style={styles.passwordContainer}>
+              <TextInput
+                style={[styles.input, errors.confirmPassword && styles.inputError]}
+                placeholder="Confirme a Senha"
+                placeholderTextColor="#fff"
+                secureTextEntry={!showConfirmPassword}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+              <TouchableOpacity
+                style={styles.passwordToggle}
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <HideText width={24} height={24} color="#fff" /> : <ShowText width={24} height={24} color="#fff" />}
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleNextStep}
+            >
+              <Text style={styles.buttonText}>Criar conta</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => setStep(1)}
+            >
+              <Text style={styles.buttonText}>Voltar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.infoText}
+              onPress={() => router.push('/login')}
+            >
+              <Text style={styles.infoTextRegular}>Já possui uma conta? <Text style={styles.infoTextBold}>Faça Login</Text></Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -171,6 +235,17 @@ const Cadastro = () => {
         <View style={styles.modalOverlay}>
           <Animated.View style={[styles.modalContent, { opacity: fadeAnim }]}>
             <Text style={styles.modalText}>{errorMessage}</Text>
+            <View style={styles.modalList}>
+              {errorMessage.includes('senha deve ter:') && (
+                <>
+                  <Text style={styles.modalListItem}>• Mínimo de 8 caracteres</Text>
+                  <Text style={styles.modalListItem}>• 1 Letra maiúscula</Text>
+                  <Text style={styles.modalListItem}>• 1 Letra minúscula</Text>
+                  <Text style={styles.modalListItem}>• 1 Número</Text>
+                  <Text style={styles.modalListItem}>• 1 Caractere especial</Text>
+                </>
+              )}
+            </View>
             <TouchableOpacity
               style={styles.modalButton}
               onPress={() => setModalVisible(false)}
@@ -190,16 +265,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: Colors.black,
-    padding: 20,
+    paddingHorizontal: '10%',
   },
-  stepContainer: {
+  innerContainer: {
     width: '100%',
     maxWidth: 500,
+    alignItems: 'center',
+  },
+  textContainer: {
+    width: '100%',
+    marginBottom: 20,
+    alignItems: 'flex-start',
   },
   title: {
     color: "#fff",
+    fontSize: 48,
+    marginBottom: 10,
+  },
+  subtitle: {
+    color: "#fff",
     fontSize: 24,
-    marginBottom: 20,
+  },
+  formContainer: {
+    width: '100%',
   },
   input: {
     height: 50,
@@ -209,6 +297,17 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: "#fff",
     paddingHorizontal: 10,
+  },
+  inputError: {
+    borderBottomColor: 'red',
+  },
+  passwordContainer: {
+    position: 'relative',
+  },
+  passwordToggle: {
+    position: 'absolute',
+    right: 10,
+    top: 15,
   },
   button: {
     height: 50,
@@ -222,9 +321,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
+  backButton: {
+    height: 50,
+    width: '100%',
+    maxWidth: 500,
+    backgroundColor: '#242424',
+    borderColor: '#fff',
+    borderWidth: 0.5,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+  },
   buttonText: {
     color: '#fff',
     fontSize: 16,
+  },
+  infoText: {
+    marginTop: 20,
+    textAlign: 'left',
+  },
+  infoTextRegular: {
+    color: '#fff',
+    fontSize: 14,
+  },
+  infoTextBold: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   modalOverlay: {
     flex: 1,
@@ -242,7 +366,15 @@ const styles = StyleSheet.create({
   },
   modalText: {
     fontSize: 16,
+    marginBottom: 10,
+  },
+  modalList: {
     marginBottom: 20,
+    textAlign: 'left',
+  },
+  modalListItem: {
+    fontSize: 16,
+    marginVertical: 2,
   },
   modalButton: {
     backgroundColor: '#242424',
