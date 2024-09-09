@@ -13,11 +13,11 @@ const Layout = () => {
           tabBarStyle: {
             backgroundColor: Colors.gray,
             position: "absolute",
-            bottom: 40,
+            bottom: 30,
             justifyContent: "center",
             alignSelf: "center",
             height: 63,
-            marginHorizontal: 120,
+            marginHorizontal: 80,
             paddingHorizontal: 10,
             paddingVertical: 8,
             paddingBottom: 8,
@@ -34,7 +34,7 @@ const Layout = () => {
         }}
       >
         <Tabs.Screen
-          name="home"
+          name="index"
           options={{
             tabBarIcon: ({ color, size, focused }) => (
               <View
