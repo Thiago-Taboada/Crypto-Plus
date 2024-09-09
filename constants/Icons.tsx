@@ -10,6 +10,8 @@ import ShoopingCartIcon from "@/assets/icons/shopping-cart-line.svg";
 import SpotifyIcon from "@/assets/icons/spotify-logo-light.svg";
 import NetflixIcon from "@/assets/icons/netflix.svg";
 import BellNotificationIcon from "@/assets/icons/bell.svg";
+import ShowText from "@/assets/icons/show-text.svg"
+import HideText from "@/assets/icons/hide-text.svg"
 
 export {
   DollarIcon,
@@ -24,4 +26,6 @@ export {
   SpotifyIcon,
   NetflixIcon,
   BellNotificationIcon,
+  ShowText,
+  HideText,
 };
