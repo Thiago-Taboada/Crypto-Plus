@@ -98,13 +98,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   btnWrapper: {
-    borderColor: "#666",
-    borderWidth: 1,
     padding: 8,
     borderRadius: 10,
   },
   btnText: {
+    marginTop: 5,
     color: Colors.white,
-    fontSize: 12,
+    fontSize: 14,
   },
 });
