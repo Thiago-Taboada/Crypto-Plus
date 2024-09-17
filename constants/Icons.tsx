@@ -14,6 +14,9 @@ import ShowText from "@/assets/icons/show-text.svg"
 import HideText from "@/assets/icons/hide-text.svg"
 import HomeHeart from "@/assets/icons/home-heart.svg"
 import ChevronLeft from "@/assets/icons/chevron-left.svg"
+import TransferAlt from "@/assets/icons/transfer-alt.svg"
+import Globe from "@/assets/icons/globe.svg"
+
 export {
   DollarIcon,
   WalletAddMoneyIcon,
@@ -31,4 +34,6 @@ export {
   HideText,
   HomeHeart,
   ChevronLeft,
+  TransferAlt,
+  Globe,
 };
