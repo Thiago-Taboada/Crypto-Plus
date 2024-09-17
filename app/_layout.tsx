@@ -1,33 +1,90 @@
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import Header from '@/components/Header';
+import React from "react";
+import { Tabs } from "expo-router";
+import { View } from "react-native";
+import Colors from "@/constants/Colors";
+import { StatusBar } from "expo-status-bar";
+import { HomeHeart, TransferAlt, Globe } from "@/constants/Icons";
 
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+const Layout = () => {
   return (
-    <Stack>
-      <Stack.Screen name="login" options={{ headerShown: false }} />
-      <Stack.Screen name="cadastro" options={{ headerShown: false }} />
-      <Stack.Screen name="perfil" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ header: () => <Header /> }}/>
-    </Stack>
+    <>
+      <Tabs
+        screenOptions={{
+          tabBarStyle: {
+            backgroundColor: Colors.gray,
+            position: "absolute",
+            bottom: 30,
+            justifyContent: "center",
+            alignSelf: "center",
+            height: 63,
+            marginHorizontal: 80,
+            paddingHorizontal: 10,
+            paddingVertical: 8,
+            paddingBottom: 8,
+            borderRadius: 40,
+            borderWidth: 1,
+            borderTopWidth: 1,
+            borderColor: "#333",
+            borderTopColor: "#333",
+          },
+          tabBarShowLabel: false,
+          tabBarInactiveTintColor: "#999",
+          tabBarActiveTintColor: Colors.white,
+          headerShown: false,
+        }}
+      >
+        <Tabs.Screen
+          name="index"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
+                }}
+              >
+                <HomeHeart width={22} height={22} color={color} />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="transactions"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
+                }}
+              >
+                <TransferAlt width={22} height={22} color={color} />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
+                }}
+              >
+                <Globe width={22} height={22} color={color} />
+              </View>
+            ),
+          }}
+        />
+      </Tabs>
+      <StatusBar style="light" />
+    </>
   );
-}
+};
+
+export default Layout;
