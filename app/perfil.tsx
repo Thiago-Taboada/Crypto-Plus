@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: Colors.black,
-    
+    paddingTop: 30
   },
   header: {
     flexDirection: 'row',
