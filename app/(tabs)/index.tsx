@@ -50,7 +50,7 @@ const Index = () => {
   ];
 
   return (
-    <View style={[styles.container, { paddingTop: 50 }]}>
+    <View style={[styles.container, { paddingTop: 60 }]}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View
           style={{
@@ -113,5 +113,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 });
-
 export default Index;
