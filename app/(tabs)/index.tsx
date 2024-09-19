@@ -5,9 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/Colors';
 import { PieChart } from 'react-native-gifted-charts';
 import ExpenseBlock from '@/components/ExpenseBlock';
+import CryptoBlock from '@/components/CryptoBlock';
 import IncomeBlock from '@/components/IncomeBlock';
 import SpendingBlock from '@/components/SpendingBlock';
 import ExpenseList from '@/data/expenses.json';
+import CryptoList from '@/data/cryptos.json';
 import incomeList from '@/data/income.json';
 import spendingList from '@/data/spending.json';
 
@@ -98,6 +100,7 @@ const Index = () => {
           </View>
         </View>
 
+        <CryptoBlock cryptoList={CryptoList} />
         <ExpenseBlock expenseList={ExpenseList} />
         <IncomeBlock incomeList={incomeList} />
         <SpendingBlock spendingList={spendingList} />
