@@ -1,9 +1,9 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { AntDesign, FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 import { View } from "react-native";
 import Colors from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
+import { HomeHeart, TransferAlt, Globe } from "@/constants/Icons";
 
 const Layout = () => {
   return (
@@ -30,7 +30,7 @@ const Layout = () => {
           tabBarShowLabel: false,
           tabBarInactiveTintColor: "#999",
           tabBarActiveTintColor: Colors.white,
-          headerShown: false, // Ensure header is hidden in Tabs
+          headerShown: false,
         }}
       >
         <Tabs.Screen
@@ -44,7 +44,7 @@ const Layout = () => {
                   backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
-                <SimpleLineIcons name="pie-chart" size={18} color={color} />
+                <HomeHeart width={22} height={22} color={color} />
               </View>
             ),
           }}
@@ -60,7 +60,7 @@ const Layout = () => {
                   backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
-                <AntDesign name="swap" size={18} color={color} />
+                <TransferAlt width={22} height={22} color={color} />
               </View>
             ),
           }}
@@ -76,7 +76,7 @@ const Layout = () => {
                   backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
-                <FontAwesome name="user-o" size={18} color={color} />
+                <Globe width={22} height={22} color={color} />
               </View>
             ),
           }}
