@@ -60,7 +60,7 @@ const Layout = () => {
                   backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
-                <TransferAlt width={22} height={22} color={color} />
+                <Globe width={22} height={22} color={color} />
               </View>
             ),
           }}
@@ -76,7 +76,7 @@ const Layout = () => {
                   backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
-                <Globe width={22} height={22} color={color} />
+                <TransferAlt width={22} height={22} color={color} />
               </View>
             ),
           }}
