@@ -1,0 +1,34 @@
+[
+    {
+     "id": "iuduwdybdyidw",
+     "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+     "nome": "Bitcoin",
+     "valor": "0.073",
+     "cor": "peach",
+     "codigo": "BTC"
+    },
+    {
+     "id": "hdubyftqcsqwde",
+     "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+     "nome": "Ethereum",
+     "valor": "0.85",
+     "cor": "robin",
+     "codigo": "ETH"
+    },
+    {
+     "id": "itrtvxctcetptk",
+     "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+     "nome": "Solana",
+     "valor": "13.42",
+     "cor": "periwinkle",
+     "codigo": "SOL"
+    },
+    {
+     "id": "eeyeftybccre",
+     "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+     "nome": "Dogecoin",
+     "valor": "15087",
+     "cor": "mindaro",
+     "codigo": "DOGE"
+    }
+]
