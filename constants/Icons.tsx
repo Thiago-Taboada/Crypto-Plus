@@ -16,6 +16,7 @@ import HomeHeart from "@/assets/icons/home-heart.svg"
 import ChevronLeft from "@/assets/icons/chevron-left.svg"
 import TransferAlt from "@/assets/icons/transfer-alt.svg"
 import Globe from "@/assets/icons/globe.svg"
+import Plus from "@/assets/icons/plus.svg"
 
 export {
   DollarIcon,
@@ -36,4 +37,5 @@ export {
   ChevronLeft,
   TransferAlt,
   Globe,
+  Plus,
 };
