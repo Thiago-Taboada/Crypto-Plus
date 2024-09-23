@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { ChevronLeft } from '@/constants/Icons';
+import AuthGuard from '@/components/AuthGuard';
 
 const Page = () => {
   const [userName, setUserName] = useState<string | null>(null);
@@ -39,50 +40,52 @@ const Page = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.push('/')}>
-          <ChevronLeft width={40} height={40} color={Colors.white} />
-        </TouchableOpacity>
-        <View style={styles.profileInfo}>
-          {userImage && <Image source={{ uri: `data:image/jpeg;base64,${userImage}` }} style={styles.image} />}
-          <View style={styles.textContainer}>
-            {userName && <Text style={styles.name}>{userName}</Text>}
-            {userPlan && <Text style={styles.plan}>Membro {userPlan}</Text>}
+    <AuthGuard>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.push('/')}>
+            <ChevronLeft width={40} height={40} color={Colors.white} />
+          </TouchableOpacity>
+          <View style={styles.profileInfo}>
+            {userImage && <Image source={{ uri: `data:image/jpeg;base64,${userImage}` }} style={styles.image} />}
+            <View style={styles.textContainer}>
+              {userName && <Text style={styles.name}>{userName}</Text>}
+              {userPlan && <Text style={styles.plan}>Membro {userPlan}</Text>}
+            </View>
           </View>
         </View>
-      </View>
-      <Text style={styles.configTitle}>Configurações</Text>
-      <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
-        <Text style={styles.optionText}>Dados pessoais</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
-        <Text style={styles.optionText}>Email</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
-        <Text style={styles.optionText}>Moeda Favorita</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
-        <Text style={styles.optionText}>Gerenciar assinatura</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
-        <Text style={styles.optionText}>Exportar/Importar dados</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
-        <Text style={styles.optionText}>Termos de uso</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.logoutButton} onPress={async () => {
-        await AsyncStorage.removeItem('userId');
-        await AsyncStorage.removeItem('userName');
-        await AsyncStorage.removeItem('userCPF');
-        await AsyncStorage.removeItem('userEmail');
-        await AsyncStorage.removeItem('img64');
-        await AsyncStorage.removeItem('IDplano');
-        router.push('/login');
-      }}>
-        <Text style={styles.logoutText}>Sair</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <Text style={styles.configTitle}>Configurações</Text>
+        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+          <Text style={styles.optionText}>Dados pessoais</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+          <Text style={styles.optionText}>Email</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+          <Text style={styles.optionText}>Moeda Favorita</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+          <Text style={styles.optionText}>Gerenciar assinatura</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+          <Text style={styles.optionText}>Exportar/Importar dados</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+          <Text style={styles.optionText}>Termos de uso</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.logoutButton} onPress={async () => {
+          await AsyncStorage.removeItem('userId');
+          await AsyncStorage.removeItem('userName');
+          await AsyncStorage.removeItem('userCPF');
+          await AsyncStorage.removeItem('userEmail');
+          await AsyncStorage.removeItem('img64');
+          await AsyncStorage.removeItem('IDplano');
+          router.push('/login');
+        }}>
+          <Text style={styles.logoutText}>Sair</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </AuthGuard>
   );
 };
 
@@ -90,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: Colors.black,
-    paddingTop: 30
+    paddingTop: 30,
   },
   header: {
     flexDirection: 'row',
