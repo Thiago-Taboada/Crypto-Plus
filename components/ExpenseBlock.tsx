@@ -28,7 +28,7 @@ const ExpenseBlock = ({ expenseList }: { expenseList: ExpenseType[] }) => {
       );
     }
 
-    let amount = item.amount.split(".");
+    let amount = item.amount ? item.amount.split(".") : [];
 
     return (
       <View

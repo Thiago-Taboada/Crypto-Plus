@@ -38,14 +38,14 @@ interface CryptoBlockProps {
 
 const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [colorPickerVisible, setColorPickerVisible] = useState(false);
+  const [selectedColor, setSelectedColor] = useState<string>('default');
   const [selectedCrypto, setSelectedCrypto] = useState<string>(''); 
-  const [color, setColor] = useState<string>('default');
   const [quantity, setQuantity] = useState<string>('');
   const [name, setName] = useState<string>('');
   const [code, setCode] = useState<string>('');
-  const [showPlaceholder, setShowPlaceholder] = useState<boolean>(true); // Para controlar la visibilidad del placeholder
+  const [showPlaceholder, setShowPlaceholder] = useState<boolean>(true);
 
-  // Función para asignar un color aleatorio excluyendo 'black', 'gray', y 'white'
   const getRandomColor = () => {
     const allowedColors = Object.keys(Colors).filter(color => 
       color !== 'black' && color !== 'gray' && color !== 'white'
@@ -53,22 +53,19 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
     const randomIndex = Math.floor(Math.random() * allowedColors.length);
     return allowedColors[randomIndex];
   };
-
-  // Limpia los campos cuando se abre el modal
   const resetFields = () => {
     setSelectedCrypto('');
-    setColor(getRandomColor());
+    setSelectedColor(getRandomColor());
     setQuantity('');
     setName('');
     setCode('');
-    setShowPlaceholder(true);  // Muestra el placeholder al abrir el modal
+    setShowPlaceholder(true);
   };
-
   const handleCryptoChange = (itemValue: string) => {
-    setShowPlaceholder(false);  // Una vez seleccionado un valor, ocultar el placeholder
+    setShowPlaceholder(false);
 
     if (itemValue === "OUTRO") {
-      setName('');  // Vacía los campos si se selecciona "Outro"
+      setName('');
       setCode('');
     } else {
       const selected = CryptoTypes.find(option => option.codigo === itemValue);
@@ -77,13 +74,21 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
         setCode(selected.codigo);
       }
     }
-
     setSelectedCrypto(itemValue);
+  }
+  const handleQuantityChange = (text: string) => {
+    const filteredText = text.replace(/[^0-9,]/g, '');
+    setQuantity(filteredText);
   };
-
+  const openColorPicker = () => {
+    setColorPickerVisible(true);
+  };
   const newCrypto = () => {
     resetFields();
     setModalVisible(true);
+  }
+  const closeColorPicker = () => {
+    setColorPickerVisible(false);
   };
 
   const saveCrypto = () => {
@@ -115,6 +120,38 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
     return null;
   };
 
+  const renderColorSquare = () => (
+    <TouchableOpacity style={styles.colorContainer} onPress={openColorPicker}>
+      <View style={[styles.colorPreview, { backgroundColor: Colors[selectedColor] || Colors.default }]} />
+      <Text style={styles.changeColorText}>Mudar cor</Text>
+    </TouchableOpacity>
+  );
+
+  const renderColorGrid = () => (
+    <Modal
+      visible={colorPickerVisible}
+      transparent={true}
+      animationType="slide"
+    >
+      <View style={styles.colorGridModal}>
+        <FlatList
+          data={Object.keys(Colors).filter(color => color !== 'black' && color !== 'gray' && color !== 'white')}
+          numColumns={5}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[styles.colorSquare, { backgroundColor: Colors[item] }]}
+              onPress={() => {
+                setSelectedColor(item);
+                closeColorPicker();
+              }}
+            />
+          )}
+          keyExtractor={(item) => item}
+        />
+      </View>
+    </Modal>
+  );
+
   return (
     <View style={{ paddingVertical: 20 }}>
       <FlatList
@@ -133,7 +170,6 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
       >
         <View style={styles.modalView}>
           <Text style={styles.modalTitle}>Adicionar Criptomoeda</Text>
-
           <Picker
             selectedValue={selectedCrypto}
             onValueChange={handleCryptoChange}
@@ -145,11 +181,11 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
             ))}
             <Picker.Item label="Outro" value="OUTRO" />
           </Picker>
-
           <View style={styles.nameCodeContainer}>
             <TextInput
               style={[styles.modalInput, { flex: 1, marginRight: 10 }]} 
               placeholder="Nome"
+              placeholderTextColor="#fff"
               value={name}
               editable={selectedCrypto === 'OUTRO'}
               onChangeText={setName}
@@ -157,6 +193,7 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
             <TextInput
               style={[styles.modalInput, { flex: 1 }]} 
               placeholder="Código"
+              placeholderTextColor="#fff"
               value={code}
               editable={selectedCrypto === 'OUTRO'}
               onChangeText={setCode}
@@ -166,23 +203,13 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
           <TextInput
             style={styles.modalInput}
             placeholder="Quantidade"
-            keyboardType="numeric"
+            placeholderTextColor="#fff"
+            keyboardType="default"
             value={quantity}
-            onChangeText={setQuantity}
+            onChangeText={handleQuantityChange}
           />
 
-          <View style={styles.colorPickerContainer}>
-            <View style={[styles.colorPreview, { backgroundColor: Colors[color] || Colors.default, height: 50 }]} />
-            <Picker
-              selectedValue={color}
-              onValueChange={(itemValue: string) => setColor(itemValue)}
-              style={[styles.picker, { marginLeft: 10 }]} 
-            >
-              {Object.keys(Colors).filter(c => c !== 'black' && c !== 'gray' && c !== 'white').map(colorOption => (
-                <Picker.Item key={colorOption} label={colorOption} value={colorOption} />
-              ))}
-            </Picker>
-          </View>
+          {renderColorSquare()}
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
@@ -192,6 +219,8 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
               <Text style={styles.modalButtonText}>Salvar</Text>
             </TouchableOpacity>
           </View>
+
+          {renderColorGrid()}
         </View>
       </Modal>
     </View>
@@ -252,22 +281,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 3,
   },
-  colorPickerContainer: {
+  colorContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
-    width: "100%",
+    marginBottom: 20,
   },
   colorPreview: {
     width: 30,
-    height: 50, 
+    height: 30,
     borderRadius: 5,
     marginRight: 10,
-    marginBottom: 15,
+  },
+  changeColorText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  colorGridModal: {
+    flex: 1,
+    paddingVertical: 150,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  colorSquare: {
+    width: 50,
+    height: 50,
+    margin: 5,
+    borderRadius: 5,
   },
   modalButton: {
     height: 50,
-    maxWidth: 500,
     backgroundColor: '#242424',
     borderColor: '#fff',
     borderWidth: 0.5,
