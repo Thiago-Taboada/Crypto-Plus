@@ -1,0 +1,52 @@
+[
+    {
+      "id": "gq8yg8gd3gd",
+      "nome": "Bitcoin",
+      "codigo": "BTC"
+    },
+    {
+      "id": "dsadAWDWDaw",
+      "nome": "Ethereum",
+      "codigo": "ETH"
+    },
+    {
+      "id": "awdada3d3ff",
+      "nome": "Tether",
+      "codigo": "USDT"
+    },
+    {
+      "id": "ikfyncxthyj",
+      "nome": "Binance Coin",
+      "codigo": "BNB"
+    },
+    {
+      "id": "rgu8uyhdgfr",
+      "nome": "Ripple",
+      "codigo": "XRP"
+    },
+    {
+      "id": "thuszvefefr",
+      "nome": "Cardano",
+      "codigo": "ADA"
+    },
+    {
+      "id": "tfaefa4f4dda",
+      "nome": "Dogecoin",
+      "codigo": "DOGE"
+    },
+    {
+      "id": "mcjouaebaytw",
+      "nome": "Solana",
+      "codigo": "SOL"
+    },
+    {
+      "id": "poidehdvtcir",
+      "nome": "Polygon",
+      "codigo": "MATIC"
+    },
+    {
+      "id": "qzsaexrvuubk",
+      "nome": "Litecoin",
+      "codigo": "LTC"
+    }
+]  
