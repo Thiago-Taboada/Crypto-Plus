@@ -15,6 +15,42 @@ interface GastoBlockProps {
     gastoList: Gasto[];
 }
 
+const rgbToLuminance = (r: number, g: number, b: number): number => {
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const getContrastColor = (backgroundColor: string) => {
+    const r = parseInt(backgroundColor.slice(1, 3), 16);
+    const g = parseInt(backgroundColor.slice(3, 5), 16);
+    const b = parseInt(backgroundColor.slice(5, 7), 16);
+
+    const luminance = rgbToLuminance(r, g, b);
+    return luminance < 128 ? '#FFFFFF' : '#000000';
+};
+
+const GastoItem: React.FC<{ tipo: { nome: string; total: number; cor: string }; totalGastos: number }> = ({ tipo, totalGastos }) => {
+    const textColor = getContrastColor(tipo.cor);
+    const totalFormatted = tipo.total.toFixed(2).replace('.', ','); // Formato del total
+    const [inteiro, decimal] = totalFormatted.split(','); // Separar la parte entera de los decimales
+
+    return (
+        <View style={[styles.gastoBlock, { backgroundColor: tipo.cor }]}>
+            <Text style={[styles.gastoName, { color: textColor }]}>{tipo.nome}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
+                <Text style={[styles.gastoValue, { color: textColor, fontWeight: '600' }]}>R$ {inteiro},</Text>
+                <Text style={[styles.gastoValue, { color: textColor, fontSize: 12, fontWeight: '400' }]}>
+                    {decimal}
+                </Text>
+            </View>
+            <View style={styles.gastoPercentageArea}>
+                <Text style={[styles.gastoPercentage, { color: textColor }]}>
+                    {((tipo.total / totalGastos) * 100).toFixed(2)}%
+                </Text>
+            </View>
+        </View>
+    );
+};
+
 const GastoBlock: React.FC<GastoBlockProps> = ({ gastoList }) => {
     const tiposGasto = gastosData.reduce((acc, tipo) => {
         acc[tipo.id] = {
@@ -42,15 +78,7 @@ const GastoBlock: React.FC<GastoBlockProps> = ({ gastoList }) => {
                     <Plus width={22} height={22} color={"#ccc"} />
                 </View>
                 {tiposConGastos.map(([idTipo, tipo]) => (
-                    <View key={idTipo} style={[styles.gastoBlock, { backgroundColor: tipo.cor }]} >
-                        <Text style={styles.gastoName}>{tipo.nome}</Text>
-                        <Text style={styles.gastoValue}>R$ {tipo.total.toFixed(2).replace('.', ',')}</Text>
-                        <View style={styles.gastoPercentageArea}>
-                            <Text style={styles.gastoPercentage}>
-                                {((tipo.total / totalGastos) * 100).toFixed(2)}%
-                            </Text>
-                        </View>
-                    </View>
+                    <GastoItem key={idTipo} tipo={tipo} totalGastos={totalGastos} />
                 ))}
             </View>
         </ScrollView>
@@ -60,6 +88,7 @@ const GastoBlock: React.FC<GastoBlockProps> = ({ gastoList }) => {
 const styles = StyleSheet.create({
     wrapper: {
         flexDirection: 'row',
+        marginBottom: 30,
     },
     addGastoBtn: {
         flex: 1,
@@ -86,12 +115,10 @@ const styles = StyleSheet.create({
     },
     gastoValue: {
         fontSize: 16,
-        fontWeight: "600",
     },
     gastoPercentage: {
         fontSize: 14,
         fontWeight: "400",
-        color: 'white',
     },
     gastoPercentageArea: {
         backgroundColor: "rgba(255, 255, 255, 0.2)",

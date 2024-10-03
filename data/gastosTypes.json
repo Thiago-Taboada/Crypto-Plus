@@ -15,13 +15,13 @@
         "id": "asdfghjklpoiuytrewq",
         "nome": "Transporte",
         "descricao": "Despesas com transporte público e privado",
-        "cor": "red"
+        "cor": "white"
     },
     {
         "id": "zxcvbnmasdfghjklpoi",
         "nome": "Entretenimento",
         "descricao": "Gastos com cinema, jogos, etc.",
-        "cor": "robin_1"
+        "cor": "salmon"
     },
     {
         "id": "poiuytrewqasdfghjkl",

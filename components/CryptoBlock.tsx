@@ -36,6 +36,19 @@ interface CryptoBlockProps {
   cryptoList: CryptoType[];
 }
 
+const rgbToLuminance = (r: number, g: number, b: number): number => {
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+};
+
+const getContrastColor = (backgroundColor: string) => {
+  const r = parseInt(backgroundColor.slice(1, 3), 16);
+  const g = parseInt(backgroundColor.slice(3, 5), 16);
+  const b = parseInt(backgroundColor.slice(5, 7), 16);
+
+  const luminance = rgbToLuminance(r, g, b);
+  return luminance < 128 ? '#FFFFFF' : '#000000';
+};
+
 const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
@@ -108,11 +121,12 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
     }
 
     if (item) {
+      const textColor = getContrastColor(Colors[item.cor as ColorKeys]);
       return (
         <View style={[styles.cryptoBlock, { backgroundColor: Colors[item.cor as ColorKeys] || Colors.default }]}>
-          <Text style={styles.cryptoName}>{item.nome}</Text>
-          <Text style={styles.cryptoValue}>{item.valor}</Text>
-          <Text style={styles.cryptoCode}>{item.codigo}</Text>
+          <Text style={[styles.cryptoName, { color: textColor }]}>{item.nome}</Text>
+          <Text style={[styles.cryptoValue, { color: textColor }]}>{item.valor}</Text>
+          <Text style={[styles.cryptoCode, { color: textColor }]}>{item.codigo}</Text>
         </View>
       );
     }
@@ -336,6 +350,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     height: 50, 
     backgroundColor: '#242424',
+    maxHeight: 200,
   },
   nameCodeContainer: {
     flexDirection: 'row',
