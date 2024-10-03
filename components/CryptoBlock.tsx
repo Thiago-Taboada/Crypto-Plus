@@ -245,11 +245,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 15,
     marginRight: 20,
+    gap: 8,
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
   cryptoName: {
-    fontSize: 16,
+    fontSize: 14,
   },
   cryptoValue: {
     fontSize: 16,

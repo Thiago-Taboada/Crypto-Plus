@@ -1,0 +1,222 @@
+[
+    {
+        "id": "1a2b3c4d5e",
+        "idTipoGasto": "qwertyuiomnbvgfcdx",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Aluguel",
+        "valor": "1500,00",
+        "recorrente": true,
+        "dt_ini": "01/10/2024",
+        "dt_fim": "01/10/2025",
+        "icon": "house"
+    },
+    {
+        "id": "2a3b4c5d6e",
+        "idTipoGasto": "efvgbhgvcfxertynue",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Supermercado",
+        "valor": "300,50",
+        "recorrente": true,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2025",
+        "icon": "shopping_cart"
+    },
+    {
+        "id": "3a4b5c6d7e",
+        "idTipoGasto": "asdfghjklpoiuytrewq",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Passagem de ônibus",
+        "valor": "4,50",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "bus"
+    },
+    {
+        "id": "4a5b6c7d8e",
+        "idTipoGasto": "zxcvbnmasdfghjklpoi",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Ingressos de cinema",
+        "valor": "30,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "movie"
+    },
+    {
+        "id": "5a6b7c8d9e",
+        "idTipoGasto": "efvgbhgvcfxertynue",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Restaurante",
+        "valor": "120,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "restaurant"
+    },
+    {
+        "id": "6a7b8c9d0e",
+        "idTipoGasto": "asdfghjklpoiuytrewq",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Combustível",
+        "valor": "200,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "gas_station"
+    },
+    {
+        "id": "7a8b9c0d1e",
+        "idTipoGasto": "zxcvbnmasdfghjklpoi",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Jogos",
+        "valor": "100,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "gamepad"
+    },
+    {
+        "id": "8a9b0c1d2e",
+        "idTipoGasto": "qwertyuiomnbvgfcdx",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Internet",
+        "valor": "99,90",
+        "recorrente": true,
+        "dt_ini": "01/10/2024",
+        "dt_fim": "01/10/2025",
+        "icon": "wifi"
+    },
+    {
+        "id": "9a0b1c2d3e",
+        "idTipoGasto": "efvgbhgvcfxertynue",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Lanche",
+        "valor": "15,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "snack"
+    },
+    {
+        "id": "0a1b2c3d4e",
+        "idTipoGasto": "qwertyuiomnbvgfcdx",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Contas de Luz",
+        "valor": "120,00",
+        "recorrente": true,
+        "dt_ini": "05/10/2024",
+        "dt_fim": "05/10/2025",
+        "icon": "lightbulb"
+    },
+    {
+        "id": "1a2b3c4d5f",
+        "idTipoGasto": "asdfghjklpoiuytrewq",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Taxi",
+        "valor": "50,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "taxi"
+    },
+    {
+        "id": "2a3b4c5d6f",
+        "idTipoGasto": "zxcvbnmasdfghjklpoi",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Streaming de Música",
+        "valor": "25,00",
+        "recorrente": true,
+        "dt_ini": "01/10/2024",
+        "dt_fim": "01/10/2025",
+        "icon": "music_note"
+    },
+    {
+        "id": "3a4b5c6d7f",
+        "idTipoGasto": "qwertyuiomnbvgfcdx",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Seguro Residencial",
+        "valor": "200,00",
+        "recorrente": true,
+        "dt_ini": "10/10/2024",
+        "dt_fim": "10/10/2025",
+        "icon": "shield"
+    },
+    {
+        "id": "4a5b6c7d8f",
+        "idTipoGasto": "efvgbhgvcfxertynue",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Feira",
+        "valor": "200,00",
+        "recorrente": true,
+        "dt_ini": "07/10/2024",
+        "dt_fim": "07/10/2025",
+        "icon": "shopping_basket"
+    },
+    {
+        "id": "5a6b7c8d9f",
+        "idTipoGasto": "asdfghjklpoiuytrewq",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Manutenção do Carro",
+        "valor": "150,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "car_repair"
+    },
+    {
+        "id": "6a7b8c9d0f",
+        "idTipoGasto": "zxcvbnmasdfghjklpoi",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Saída com Amigos",
+        "valor": "80,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "group"
+    },
+    {
+        "id": "7a8b9c0d1f",
+        "idTipoGasto": "efvgbhgvcfxertynue",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Doces",
+        "valor": "10,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "candy"
+    },
+    {
+        "id": "8a9b0c1d2f",
+        "idTipoGasto": "qwertyuiomnbvgfcdx",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Taxas de Condomínio",
+        "valor": "250,00",
+        "recorrente": true,
+        "dt_ini": "01/10/2024",
+        "dt_fim": "01/10/2025",
+        "icon": "building"
+    },
+    {
+        "id": "9a0b1c2d3f",
+        "idTipoGasto": "asdfghjklpoiuytrewq",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Estacionamento",
+        "valor": "30,00",
+        "recorrente": false,
+        "dt_ini": "03/10/2024",
+        "dt_fim": "03/10/2024",
+        "icon": "parking"
+    },
+    {
+        "id": "0a1b2c3d4f",
+        "idTipoGasto": "zxcvbnmasdfghjklpoi",
+        "idUser": "Yy8mE6DxTj9gqvfpDg8J8WhU5gL2",
+        "nome": "Assinatura de Jogo",
+        "valor": "45,00",
+        "recorrente": true,
+        "dt_ini": "01/10/2024",
+        "dt_fim": "01/10/2025",
+        "icon": "videogame_asset"
+    }
+]

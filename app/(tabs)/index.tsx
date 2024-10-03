@@ -4,10 +4,12 @@ import { PieChart } from 'react-native-gifted-charts';
 import AuthGuard from '@/components/AuthGuard';
 import ExpenseBlock from '@/components/ExpenseBlock';
 import CryptoBlock from '@/components/CryptoBlock';
+import GastoBlock from '@/components/GastoBlock';
 import IncomeBlock from '@/components/IncomeBlock';
 import SpendingBlock from '@/components/SpendingBlock';
 import ExpenseList from '@/data/expenses.json';
 import CryptoList from '@/data/cryptos.json';
+import GastoList from '@/data/gastos.json';
 import incomeList from '@/data/income.json';
 import spendingList from '@/data/spending.json';
 import Colors from '@/constants/Colors';
@@ -51,9 +53,12 @@ const Index: React.FC = () => {
               />
             </View>
           </View>
-
-          <CryptoBlock cryptoList={CryptoList} />
           <ExpenseBlock expenseList={ExpenseList} />
+          <Text style={{ color: Colors.white, fontSize: 16 }}>
+                Minhas <Text style={{ fontWeight: '700' }}>Cryptos</Text>
+          </Text>
+          <CryptoBlock cryptoList={CryptoList} />
+          <GastoBlock gastoList={GastoList} />
           <IncomeBlock incomeList={incomeList} />
           <SpendingBlock spendingList={spendingList} />
         </ScrollView>

@@ -1,0 +1,38 @@
+[
+    {
+        "id": "qwertyuiomnbvgfcdx",
+        "nome": "Casa",
+        "descricao": "Despesas referentes a casa.",
+        "cor": "tintColor"
+    },
+    {
+        "id": "efvgbhgvcfxertynue",
+        "nome": "Alimentação",
+        "descricao": "Despesas referentes a comida e alimentação",
+        "cor": "blue"
+    },
+    {
+        "id": "asdfghjklpoiuytrewq",
+        "nome": "Transporte",
+        "descricao": "Despesas com transporte público e privado",
+        "cor": "red"
+    },
+    {
+        "id": "zxcvbnmasdfghjklpoi",
+        "nome": "Entretenimento",
+        "descricao": "Gastos com cinema, jogos, etc.",
+        "cor": "robin_1"
+    },
+    {
+        "id": "poiuytrewqasdfghjkl",
+        "nome": "Vestuário",
+        "descricao": "Compras de roupas e acessórios",
+        "cor": "peach"
+    },
+    {
+        "id": "lkjhgfdsapoiuytrewq",
+        "nome": "Saúde",
+        "descricao": "Despesas com médicos, remédios, etc.",
+        "cor": "tiffany_blue_1"
+    }
+]
