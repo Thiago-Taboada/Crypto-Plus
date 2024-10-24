@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   iconWrapper: {
-    backgroundColor: Colors.grey,
+    backgroundColor: Colors.gray,
     padding: 15,
     borderRadius: 50,
     marginRight: 10,

@@ -25,7 +25,7 @@ const IncomeBlock = ({ incomeList }: { incomeList: IncomeType[] }) => {
     return (
       <View
         style={{
-          backgroundColor: Colors.grey,
+          backgroundColor: Colors.gray,
           padding: 20,
           borderRadius: 20,
           marginRight: 15,

@@ -13,6 +13,7 @@ const Sidemenu = () => {
   const [userImage, setUserImage] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string | null>(null);
 
+  const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay'>('menu');
   const [showPasswordView, setShowPasswordView] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -66,7 +67,7 @@ const Sidemenu = () => {
     setOldPassword('');
     setNewPassword('');
     setConfirmPassword('');
-    setShowPasswordView(!showPasswordView);
+    setActiveView(activeView === 'menu' ? 'passwordOverlay' : 'menu');
   };
 
   const handleConfirmPasswordChange = () => {
@@ -79,80 +80,67 @@ const Sidemenu = () => {
       return;
     }
   
-    setShowPasswordView(!showPasswordView);// arreglar para que oculte la view
+    setActiveView('menu');
   };
 
   return (
     <AuthGuard>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.push('/')}>
-            <ChevronLeft width={40} height={40} color={Colors.white} />
-          </TouchableOpacity>
-          <View style={styles.profileInfo}>
-            {userImage && <Image source={{ uri: `data:image/jpeg;base64,${userImage}` }} style={styles.image} />}
-            <View style={styles.textContainer}>
-              {userName && <Text style={styles.name}>{userName}</Text>}
-              {userPlan && <Text style={styles.plan}>Membro {userPlan}</Text>}
-            </View>
-          </View>
-        </View>
-        <Text style={styles.configTitle}>Configurações</Text>
-
-        <TouchableOpacity style={styles.option} onPress={() => { }}>
-          <Text style={styles.optionText}>Dados pessoais</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={togglePasswordView}>
-          <Text style={styles.optionText}>Alterar senha</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => { }}>
-          <Text style={styles.optionText}>Moeda Favorita</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => { }}>
-          <Text style={styles.optionText}>Gerenciar assinatura</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => { }}>
-          <Text style={styles.optionText}>Exportar/Importar dados</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => { }}>
-          <Text style={styles.optionText}>Termos de uso</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.logoutButton} onPress={async () => {
-          await AsyncStorage.removeItem('userId');
-          await AsyncStorage.removeItem('userName');
-          await AsyncStorage.removeItem('userCPF');
-          await AsyncStorage.removeItem('userEmail');
-          await AsyncStorage.removeItem('img64');
-          await AsyncStorage.removeItem('IDplano');
-          router.push('/login');
-        }}>
-          <Text style={styles.logoutText}>Sair</Text>
-        </TouchableOpacity>
-        {/* MODAL ERROR MSG */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisibleErrorMsg}
-          onRequestClose={closeModalErrorMsg}
-        >
-          <View style={styles.modalOverlayErrormsg}>
-            <View style={styles.modalContentErrormsg}>
-              <Text style={styles.modalTextErrormsg}>{errorMsg}</Text>
-              <TouchableOpacity style={styles.modalButtonErrormsg} onPress={closeModalErrorMsg}>
-                <Text style={styles.modalButtonTextErrormsg}>Fechar</Text>
+        {activeView === 'menu' && (
+          <View style={styles.menu}>
+            {/* Contenido del menú */}
+            <View style={styles.header}>
+              <TouchableOpacity onPress={() => router.push('/')}>
+                <ChevronLeft width={40} height={40} color={Colors.white} />
               </TouchableOpacity>
+              <View style={styles.profileInfo}>
+                {userImage && <Image source={{ uri: `data:image/jpeg;base64,${userImage}` }} style={styles.image} />}
+                <View style={styles.textContainer}>
+                  {userName && <Text style={styles.name}>{userName}</Text>}
+                  {userPlan && <Text style={styles.plan}>Membro {userPlan}</Text>}
+                </View>
+              </View>
             </View>
-          </View>
-        </Modal>
+            <Text style={styles.configTitle}>Configurações</Text>
+            {/* Opciones del menú */}
+            <TouchableOpacity style={styles.option} onPress={() => { }}>
+              <Text style={styles.optionText}>Dados pessoais</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.option} onPress={togglePasswordView}>
+              <Text style={styles.optionText}>Alterar senha</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <Text style={styles.optionText}>Moeda Favorita</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <Text style={styles.optionText}>Gerenciar assinatura</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <Text style={styles.optionText}>Exportar/Importar dados</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <Text style={styles.optionText}>Termos de uso</Text>
+          </TouchableOpacity>
 
+          <TouchableOpacity style={styles.logoutButton} onPress={async () => {
+            await AsyncStorage.removeItem('userId');
+            await AsyncStorage.removeItem('userName');
+            await AsyncStorage.removeItem('userCPF');
+            await AsyncStorage.removeItem('userEmail');
+            await AsyncStorage.removeItem('img64');
+            await AsyncStorage.removeItem('IDplano');
+            router.push('/login');
+          }}>
+            <Text style={styles.logoutText}>Sair</Text>
+          </TouchableOpacity>
+        </View>
+        )}
 
-        {/* Vista para cambiar la contraseña */}
-        {showPasswordView && (
+        {activeView === 'passwordOverlay' && (
           <View style={styles.passwordOverlay}>
             <View style={styles.passwordContent}>
               <Text style={styles.passwordTitle}>Alterar senha</Text>
-
+              {/* Campos para cambiar la contraseña */}
               <Text style={styles.passwordLabel}>Senha antiga</Text>
               <TextInput
                 style={styles.passwordInput}
@@ -162,10 +150,7 @@ const Sidemenu = () => {
                 placeholder="Digite sua senha antiga"
                 placeholderTextColor="#888"
               />
-              <TouchableOpacity 
-                style={styles.iconContainer} 
-                onPress={() => setShowOldPassword(!showOldPassword)}
-              >
+              <TouchableOpacity style={styles.iconContainer} onPress={() => setShowOldPassword(!showOldPassword)}>
                 {showOldPassword ? (
                   <HideText width={24} height={24} color="#fff" />
                 ) : (
@@ -225,7 +210,22 @@ const Sidemenu = () => {
           </View>
         )}
 
-
+        {/* MODAL ERROR MSG */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisibleErrorMsg}
+          onRequestClose={closeModalErrorMsg}
+        >
+          <View style={styles.modalOverlayErrormsg}>
+            <View style={styles.modalContentErrormsg}>
+              <Text style={styles.modalTextErrormsg}>{errorMsg}</Text>
+              <TouchableOpacity style={styles.modalButtonErrormsg} onPress={closeModalErrorMsg}>
+                <Text style={styles.modalButtonTextErrormsg}>Fechar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </AuthGuard>
   );
@@ -236,6 +236,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: Colors.black,
     paddingTop: 30,
+  },
+  menu: {
+    flexGrow: 1,
   },
   header: {
     flexDirection: 'row',
@@ -297,28 +300,8 @@ const styles = StyleSheet.create({
     color: Colors.red,
     fontSize: 20,
   },
-  // VIEW MUDAR SENHA
-  // passwordOverlay: {
-  //   position: 'absolute', // Cambiado a absolute
-  //   top: 0,
-  //   left: 0,
-  //   right: 0,
-  //   bottom: 0,
-  //   backgroundColor: 'rgba(0, 0, 0, 0.8)', // Fondo oscuro
-  //   justifyContent: 'center', // Centrar contenido
-  //   alignItems: 'center', // Centrar contenido
-  //   zIndex: 1000, // Asegurarse de que esté por encima de otros elementos
-  // },
-  // passwordContent: {
-  //   width: '90%', // O el tamaño que prefieras
-  //   backgroundColor: Colors.black, // Fondo de la caja
-  //   padding: 30,
-  //   borderRadius: 10,
-  //   elevation: 5, // Añadir sombra en Android
-  // },
 
   passwordOverlay: {
-    //position: 'absolute',
     flex: 1,
     backgroundColor: Colors.black,
     top: 0,
