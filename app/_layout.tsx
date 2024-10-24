@@ -26,7 +26,7 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="cadastro" options={{ headerShown: false }} />
-      <Stack.Screen name="perfil" options={{ headerShown: false }} />
+      <Stack.Screen name="sidemenu" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ header: () => <Header /> }}/>
     </Stack>
   );

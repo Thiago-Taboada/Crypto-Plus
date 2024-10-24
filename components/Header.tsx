@@ -42,7 +42,7 @@ const Header = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.wrapper}>
         <View style={styles.userInfoWrapper}>
-          <TouchableOpacity onPress={() => router.push('/perfil')}>
+          <TouchableOpacity onPress={() => router.push('/sidemenu')}>
           <Image
               source={{ uri: `data:image/jpeg;base64,${userImage}` }}
               style={styles.userImg}
