@@ -1,9 +1,9 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView, Modal, TextInput, Animated } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
-import { ChevronLeft } from '@/constants/Icons';
+import { ChevronLeft, ShowText, HideText } from '@/constants/Icons';
 import AuthGuard from '@/components/AuthGuard';
 
 const Page = () => {
@@ -12,6 +12,16 @@ const Page = () => {
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userImage, setUserImage] = useState<string | null>(null);
   const [userPlan, setUserPlan] = useState<string | null>(null);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -39,6 +49,22 @@ const Page = () => {
     router.push(path);
   };
 
+  const openModalPassword = () => {
+    setOldPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setModalVisible(true);
+  };
+
+  const closeModalPassword = () => {
+    setModalVisible(false);
+  };
+
+  const handleConfirmPasswordChange = () => {
+    // Implementar aqui a logica para mudar a senha
+    closeModalPassword();
+  };
+
   return (
     <AuthGuard>
       <ScrollView contentContainerStyle={styles.container}>
@@ -55,24 +81,26 @@ const Page = () => {
           </View>
         </View>
         <Text style={styles.configTitle}>Configurações</Text>
-        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+
+        <TouchableOpacity style={styles.option} onPress={() => { }}>
           <Text style={styles.optionText}>Dados pessoais</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
-          <Text style={styles.optionText}>Email</Text>
+        <TouchableOpacity style={styles.option} onPress={openModalPassword}>
+          <Text style={styles.optionText}>Alterar senha</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+        <TouchableOpacity style={styles.option} onPress={() => { }}>
           <Text style={styles.optionText}>Moeda Favorita</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+        <TouchableOpacity style={styles.option} onPress={() => { }}>
           <Text style={styles.optionText}>Gerenciar assinatura</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+        <TouchableOpacity style={styles.option} onPress={() => { }}>
           <Text style={styles.optionText}>Exportar/Importar dados</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.option} onPress={() => handleNavigation('/')}>
+        <TouchableOpacity style={styles.option} onPress={() => { }}>
           <Text style={styles.optionText}>Termos de uso</Text>
         </TouchableOpacity>
+
         <TouchableOpacity style={styles.logoutButton} onPress={async () => {
           await AsyncStorage.removeItem('userId');
           await AsyncStorage.removeItem('userName');
@@ -84,6 +112,97 @@ const Page = () => {
         }}>
           <Text style={styles.logoutText}>Sair</Text>
         </TouchableOpacity>
+
+        {/* Modal para Atualizar Senha */}
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModalPassword}
+        >
+          <View style={styles.modalPasswordOverlay}>
+            <View style={styles.modalPasswordContent}>
+              <Text style={styles.modalPasswordTitle}>Alterar senha</Text>
+
+              <Text style={styles.modalPasswordLabel}>Senha antiga</Text>
+              <View style={styles.modalPasswordInputContainer}>
+                <TextInput
+                  style={styles.modalPasswordInput}
+                  value={oldPassword}
+                  onChangeText={setOldPassword}
+                  secureTextEntry={!showOldPassword}
+                  placeholder="Digite sua senha antiga"
+                  placeholderTextColor="#888"
+                />
+                {/* <TouchableOpacity 
+          style={styles.iconContainer} 
+          onPress={() => setShowOldPassword(!showOldPassword)}
+        >
+          {showOldPassword ? (
+            <HideText width={24} height={24} color="#fff" />
+          ) : (
+            <ShowText width={24} height={24} color="#fff" />
+          )}
+        </TouchableOpacity> */}
+              </View>
+
+              <Text style={styles.modalPasswordLabel}>Senha nova</Text>
+              <View style={styles.modalPasswordInputContainer}>
+                <TextInput
+                  style={styles.modalPasswordInput}
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                  secureTextEntry={!showNewPassword}
+                  placeholder="Digite sua nova senha"
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? (
+                    <HideText width={24} height={24} color="#fff" />
+                  ) : (
+                    <ShowText width={24} height={24} color="#fff" />
+                  )}
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.modalPasswordLabel}>Confirmar Senha</Text>
+              <View style={styles.modalPasswordInputContainer}>
+                <TextInput
+                  style={styles.modalPasswordInput}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showConfirmPassword}
+                  placeholder="Confirme sua senha"
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <HideText width={24} height={24} color="#fff" />
+                  ) : (
+                    <ShowText width={24} height={24} color="#fff" />
+                  )}
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.modalPasswordButtonContainer}>
+                <TouchableOpacity style={styles.modalPasswordButton} onPress={closeModalPassword}>
+                  <Text style={styles.modalPasswordButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.modalPasswordButton} onPress={handleConfirmPasswordChange}>
+                  <Text style={styles.modalPasswordButtonText}>Confirmar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+
       </ScrollView>
     </AuthGuard>
   );
@@ -155,6 +274,65 @@ const styles = StyleSheet.create({
     color: Colors.red,
     fontSize: 20,
   },
+  modalPasswordOverlay: {
+    flex: 1,
+    backgroundColor: Colors.black,
+  },
+  modalPasswordContent: {
+    paddingTop: 10,
+    paddingHorizontal: 30,
+    borderRadius: 0,
+    width: '100%',
+    height: '100%',
+  },
+  modalPasswordTitle: {
+    fontSize: 28,
+    marginBottom: 20,
+    color: Colors.white,
+  },
+  modalPasswordLabel: {
+    fontSize: 16,
+    marginBottom: 5,
+    color: Colors.white,
+  },
+  modalPasswordInputContainer: {
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  modalPasswordInput: {
+    flex: 1,
+    height: 50,
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    paddingHorizontal: 10,
+    color: Colors.white,
+  },
+  modalPasswordButtonContainer: {
+    flexDirection: 'column',
+    marginTop: 20,
+    width: '100%',
+  },
+  modalPasswordButton: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#242424',
+    borderColor: '#fff',
+    borderWidth: 0.5,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  modalPasswordButtonText: {
+    color: Colors.white,
+    fontSize: 16,
+  },
+  iconContainer: {
+    position: 'absolute',
+    right: 20,
+    top: 15,
+  }
+
 });
 
 export default Page;
