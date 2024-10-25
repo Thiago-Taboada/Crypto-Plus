@@ -14,7 +14,6 @@ const Sidemenu = () => {
   const [userPlan, setUserPlan] = useState<string | null>(null);
 
   const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay'>('menu');
-  const [showPasswordView, setShowPasswordView] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -29,7 +28,7 @@ const Sidemenu = () => {
   const openModalErrorMsg = (message: string) => {
     setErrorMsg(message);
     setModalVisibleErrorMsg(true);
-  };  
+  };
 
   const closeModalErrorMsg = () => {
     setModalVisibleErrorMsg(false);
@@ -38,6 +37,10 @@ const Sidemenu = () => {
   const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
     return passwordRegex.test(password);
+  };
+
+  const validateOldPassword = (password: string) => {
+    return password.length >= 8;
   };
   const router = useRouter();
 
@@ -71,15 +74,21 @@ const Sidemenu = () => {
   };
 
   const handleConfirmPasswordChange = () => {
+    if (!validateOldPassword(oldPassword)) {
+      openModalErrorMsg('Informe a sua senha atual.');
+      return;
+    }
     if (!validatePassword(newPassword)) {
-      openModalErrorMsg('A nova senha deve ter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.');
+      openModalErrorMsg('A senha deve ter no minimo:');
       return;
     }
     if (newPassword !== confirmPassword) {
-      openModalErrorMsg('A nova senha e a confirmação devem ser iguais.');
+      openModalErrorMsg('As senhas não correspondem.');
       return;
     }
-  
+
+
+
     setActiveView('menu');
   };
 
@@ -102,7 +111,6 @@ const Sidemenu = () => {
               </View>
             </View>
             <Text style={styles.configTitle}>Configurações</Text>
-            {/* Opciones del menú */}
             <TouchableOpacity style={styles.option} onPress={() => { }}>
               <Text style={styles.optionText}>Dados pessoais</Text>
             </TouchableOpacity>
@@ -110,94 +118,96 @@ const Sidemenu = () => {
               <Text style={styles.optionText}>Alterar senha</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.option} onPress={() => { }}>
-            <Text style={styles.optionText}>Moeda Favorita</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.option} onPress={() => { }}>
-            <Text style={styles.optionText}>Gerenciar assinatura</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.option} onPress={() => { }}>
-            <Text style={styles.optionText}>Exportar/Importar dados</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.option} onPress={() => { }}>
-            <Text style={styles.optionText}>Termos de uso</Text>
-          </TouchableOpacity>
+              <Text style={styles.optionText}>Moeda Favorita</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.option} onPress={() => { }}>
+              <Text style={styles.optionText}>Gerenciar assinatura</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.option} onPress={() => { }}>
+              <Text style={styles.optionText}>Exportar/Importar dados</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.option} onPress={() => { }}>
+              <Text style={styles.optionText}>Termos de uso</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.logoutButton} onPress={async () => {
-            await AsyncStorage.removeItem('userId');
-            await AsyncStorage.removeItem('userName');
-            await AsyncStorage.removeItem('userCPF');
-            await AsyncStorage.removeItem('userEmail');
-            await AsyncStorage.removeItem('img64');
-            await AsyncStorage.removeItem('IDplano');
-            router.push('/login');
-          }}>
-            <Text style={styles.logoutText}>Sair</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity style={styles.logoutButton} onPress={async () => {
+              await AsyncStorage.removeItem('userId');
+              await AsyncStorage.removeItem('userName');
+              await AsyncStorage.removeItem('userCPF');
+              await AsyncStorage.removeItem('userEmail');
+              await AsyncStorage.removeItem('img64');
+              await AsyncStorage.removeItem('IDplano');
+              router.push('/login');
+            }}>
+              <Text style={styles.logoutText}>Sair</Text>
+            </TouchableOpacity>
+          </View>
         )}
 
         {activeView === 'passwordOverlay' && (
           <View style={styles.passwordOverlay}>
             <View style={styles.passwordContent}>
               <Text style={styles.passwordTitle}>Alterar senha</Text>
-              {/* Campos para cambiar la contraseña */}
               <Text style={styles.passwordLabel}>Senha antiga</Text>
-              <TextInput
-                style={styles.passwordInput}
-                value={oldPassword}
-                onChangeText={setOldPassword}
-                secureTextEntry={!showOldPassword}
-                placeholder="Digite sua senha antiga"
-                placeholderTextColor="#888"
-              />
-              <TouchableOpacity style={styles.iconContainer} onPress={() => setShowOldPassword(!showOldPassword)}>
-                {showOldPassword ? (
-                  <HideText width={24} height={24} color="#fff" />
-                ) : (
-                  <ShowText width={24} height={24} color="#fff" />
-                )}
-              </TouchableOpacity>
-
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={oldPassword}
+                  onChangeText={setOldPassword}
+                  secureTextEntry={!showOldPassword}
+                  placeholder="Digite sua senha atual"
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity style={styles.iconContainer} onPress={() => setShowOldPassword(!showOldPassword)}>
+                  {showOldPassword ? (
+                    <HideText width={24} height={24} color="#fff" />
+                  ) : (
+                    <ShowText width={24} height={24} color="#fff" />
+                  )}
+                </TouchableOpacity>
+              </View>
               <Text style={styles.passwordLabel}>Senha nova</Text>
-              <TextInput
-                style={styles.passwordInput}
-                value={newPassword}
-                onChangeText={setNewPassword}
-                secureTextEntry={!showNewPassword}
-                placeholder="Digite sua nova senha"
-                placeholderTextColor="#888"
-              />
-              <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => setShowNewPassword(!showNewPassword)}
-              >
-                {showNewPassword ? (
-                  <HideText width={24} height={24} color="#fff" />
-                ) : (
-                  <ShowText width={24} height={24} color="#fff" />
-                )}
-              </TouchableOpacity>
-
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                  secureTextEntry={!showNewPassword}
+                  placeholder="Digite sua nova senha"
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => setShowNewPassword(!showNewPassword)}
+                >
+                  {showNewPassword ? (
+                    <HideText width={24} height={24} color="#fff" />
+                  ) : (
+                    <ShowText width={24} height={24} color="#fff" />
+                  )}
+                </TouchableOpacity>
+              </View>
               <Text style={styles.passwordLabel}>Confirmar Senha</Text>
-              <TextInput
-                style={styles.passwordInput}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry={!showConfirmPassword}
-                placeholder="Confirme sua senha"
-                placeholderTextColor="#888"
-              />
-              <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? (
-                  <HideText width={24} height={24} color="#fff" />
-                ) : (
-                  <ShowText width={24} height={24} color="#fff" />
-                )}
-              </TouchableOpacity>
-
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  secureTextEntry={!showConfirmPassword}
+                  placeholder="Confirme sua senha"
+                  placeholderTextColor="#888"
+                />
+                <TouchableOpacity
+                  style={styles.iconContainer}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <HideText width={24} height={24} color="#fff" />
+                  ) : (
+                    <ShowText width={24} height={24} color="#fff" />
+                  )}
+                </TouchableOpacity>
+              </View>
               <View style={styles.passwordButtonContainer}>
                 <TouchableOpacity style={styles.passwordButton} onPress={togglePasswordView}>
                   <Text style={styles.passwordButtonText}>Cancelar</Text>
@@ -220,6 +230,17 @@ const Sidemenu = () => {
           <View style={styles.modalOverlayErrormsg}>
             <View style={styles.modalContentErrormsg}>
               <Text style={styles.modalTextErrormsg}>{errorMsg}</Text>
+              <View style={styles.modalListErrormsg}>
+              {errorMsg.includes('senha deve ter no minimo:') && (
+                <>
+                  <Text style={styles.modalListItemErrormsg}>• 8 caracteres</Text>
+                  <Text style={styles.modalListItemErrormsg}>• 1 Letra maiúscula</Text>
+                  <Text style={styles.modalListItemErrormsg}>• 1 Letra minúscula</Text>
+                  <Text style={styles.modalListItemErrormsg}>• 1 Número</Text>
+                  <Text style={styles.modalListItemErrormsg}>• 1 Caractere especial</Text>
+                </>
+              )}
+              </View>
               <TouchableOpacity style={styles.modalButtonErrormsg} onPress={closeModalErrorMsg}>
                 <Text style={styles.modalButtonTextErrormsg}>Fechar</Text>
               </TouchableOpacity>
@@ -302,12 +323,7 @@ const styles = StyleSheet.create({
   },
 
   passwordOverlay: {
-    flex: 1,
     backgroundColor: Colors.black,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
   },
   passwordContent: {
     paddingTop: 10,
@@ -331,12 +347,17 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   passwordInput: {
-    flex: 1,
     height: 50,
+    width: '100%',
     borderBottomColor: '#ccc',
     borderBottomWidth: 1,
     paddingHorizontal: 10,
     color: Colors.white,
+  },
+  iconContainer: {
+    position: 'absolute',
+    right: 20,
+    top: 15,
   },
   passwordButtonContainer: {
     flexDirection: 'column',
@@ -358,11 +379,6 @@ const styles = StyleSheet.create({
     color: Colors.white,
     fontSize: 16,
   },
-  iconContainer: {
-    position: 'absolute',
-    right: 20,
-    top: 15,
-  },
 
   // MODAL ERROR MSG
   modalOverlayErrormsg: {
@@ -370,7 +386,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1000,
   },
   modalContentErrormsg: {
     backgroundColor: '#fff',
@@ -378,16 +393,18 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '80%',
     maxWidth: 500,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     zIndex: 1000,
   },
   modalTextErrormsg: {
-    fontSize: 16,
+    textAlign: 'left',
+    fontSize: 18,
     marginBottom: 10,
   },
   modalListErrormsg: {
-    marginBottom: 20,
     textAlign: 'left',
+    paddingLeft: 20,
+    marginBottom: 10,
   },
   modalListItemErrormsg: {
     fontSize: 16,
