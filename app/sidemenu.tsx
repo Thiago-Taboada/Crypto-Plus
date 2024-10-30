@@ -4,26 +4,37 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
 import { ChevronLeft, ShowText, HideText } from '@/constants/Icons';
+import { TextInputMask } from 'react-native-masked-text';
 import AuthGuard from '@/components/AuthGuard';
 
 const Sidemenu = () => {
-  const [userName, setUserName] = useState<string | null>(null);
-  const [userCPF, setUserCPF] = useState<string | null>(null);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [userImage, setUserImage] = useState<string | null>(null);
-  const [userPlan, setUserPlan] = useState<string | null>(null);
+  const [userNameGlobal, setUserNameGlobal] = useState<string | null>(null);
+  const [userCPFGlobal, setUserCPFGlobal] = useState<string | null>(null);
+  const [userEmailGlobal, setUserEmailGlobal] = useState<string | null>(null);
+  const [userImageGlobal, setUserImageGlobal] = useState<string | null>(null);
+  const [userPlanGlobal, setUserPlanGlobal] = useState<string | null>(null);
 
-  const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay'>('menu');
+  const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay' | 'dataOverlay' | 'favOverlay'>('menu');
+
+  const [userName, setUserName] = useState('');
+  const [userCPF, setUserCPF] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [modalVisibleErrorMsg, setModalVisibleErrorMsg] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const syncWithGlobalValues = () => {
+    if (userNameGlobal) setUserName(userNameGlobal);
+    if (userCPFGlobal) setUserCPF(userCPFGlobal);
+    if (userEmailGlobal) setUserEmail(userEmailGlobal);
+  };
 
   const openModalErrorMsg = (message: string) => {
     setErrorMsg(message);
@@ -34,6 +45,7 @@ const Sidemenu = () => {
     setModalVisibleErrorMsg(false);
   };
 
+  //Password:
   const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
     return passwordRegex.test(password);
@@ -41,36 +53,6 @@ const Sidemenu = () => {
 
   const validateOldPassword = (password: string) => {
     return password.length >= 8;
-  };
-  const router = useRouter();
-
-  useEffect(() => {
-    const getUserData = async () => {
-      try {
-        const name = await AsyncStorage.getItem('userName');
-        const cpf = await AsyncStorage.getItem('userCPF');
-        const email = await AsyncStorage.getItem('userEmail');
-        const image = await AsyncStorage.getItem('img64');
-        const plan = await AsyncStorage.getItem('IDplano');
-
-        setUserName(name);
-        setUserCPF(cpf);
-        setUserEmail(email);
-        setUserImage(image);
-        setUserPlan(plan);
-      } catch (error) {
-        console.error('Erro ao recuperar os dados do usuário:', error);
-      }
-    };
-    getUserData();
-  }, []);
-
-
-  const togglePasswordView = () => {
-    setOldPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
-    setActiveView(activeView === 'menu' ? 'passwordOverlay' : 'menu');
   };
 
   const handleConfirmPasswordChange = () => {
@@ -87,37 +69,114 @@ const Sidemenu = () => {
       return;
     }
 
-
+    // codigo e logica aqui para alterar senha
 
     setActiveView('menu');
   };
+
+  //Dados pessoais:
+  const handleConfirmDataChange = () => {
+    const nameValidationRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]{5,}$/;
+    const emailValidationRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const cpfValidationRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+  
+    if (!nameValidationRegex.test(userName)) {
+      openModalErrorMsg('O nome deve ter pelo menos 5 letras.');
+      return;
+    }
+  
+    if (!emailValidationRegex.test(userEmail)) {
+      openModalErrorMsg('Email inválido.');
+      return;
+    }
+  
+    if (!cpfValidationRegex.test(userCPF)) {
+      openModalErrorMsg('CPF inválido.');
+      return;
+    }
+  
+    // Logica para salvar aqui
+  
+    setActiveView('menu');
+  };
+  
+
+
+  // Manage Active view
+  const togglePasswordView = () => {
+    if (activeView === 'menu') {
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setActiveView('passwordOverlay');
+    } else {
+      setActiveView('menu');
+    }
+  };
+  const toggleDataView = () => {
+    if (activeView === 'menu') {
+      syncWithGlobalValues();
+      setActiveView('dataOverlay');
+    } else {
+      setActiveView('menu');
+    }
+  };
+  const toggleFavView = () => {
+    if (activeView === 'menu') {
+      syncWithGlobalValues();
+      setActiveView('favOverlay');
+    } else {
+      setActiveView('menu');
+    }
+  };
+  const router = useRouter();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const name = await AsyncStorage.getItem('userName');
+        const cpf = await AsyncStorage.getItem('userCPF');
+        const email = await AsyncStorage.getItem('userEmail');
+        const image = await AsyncStorage.getItem('img64');
+        const plan = await AsyncStorage.getItem('IDplano');
+
+        setUserNameGlobal(name);
+        setUserCPFGlobal(cpf);
+        setUserEmailGlobal(email);
+        setUserImageGlobal(image);
+        setUserPlanGlobal(plan);
+      } catch (error) {
+        console.error('Erro ao recuperar os dados do usuário:', error);
+      }
+    };
+    getUserData();
+  }, []);
 
   return (
     <AuthGuard>
       <ScrollView contentContainerStyle={styles.container}>
         {activeView === 'menu' && (
           <View style={styles.menu}>
-            {/* Contenido del menú */}
             <View style={styles.header}>
               <TouchableOpacity onPress={() => router.push('/')}>
                 <ChevronLeft width={40} height={40} color={Colors.white} />
               </TouchableOpacity>
               <View style={styles.profileInfo}>
-                {userImage && <Image source={{ uri: `data:image/jpeg;base64,${userImage}` }} style={styles.image} />}
+                {userImageGlobal && <Image source={{ uri: `data:image/jpeg;base64,${userImageGlobal}` }} style={styles.image} />}
                 <View style={styles.textContainer}>
-                  {userName && <Text style={styles.name}>{userName}</Text>}
-                  {userPlan && <Text style={styles.plan}>Membro {userPlan}</Text>}
+                  {userNameGlobal && <Text style={styles.name}>{userNameGlobal}</Text>}
+                  {userPlanGlobal && <Text style={styles.plan}>Membro {userPlanGlobal}</Text>}
                 </View>
               </View>
             </View>
             <Text style={styles.configTitle}>Configurações</Text>
-            <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <TouchableOpacity style={styles.option} onPress={toggleDataView}>
               <Text style={styles.optionText}>Dados pessoais</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.option} onPress={togglePasswordView}>
               <Text style={styles.optionText}>Alterar senha</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <TouchableOpacity style={styles.option} onPress={toggleFavView}>
               <Text style={styles.optionText}>Moeda Favorita</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.option} onPress={() => { }}>
@@ -144,14 +203,62 @@ const Sidemenu = () => {
           </View>
         )}
 
-        {activeView === 'passwordOverlay' && (
-          <View style={styles.passwordOverlay}>
-            <View style={styles.passwordContent}>
-              <Text style={styles.passwordTitle}>Alterar senha</Text>
-              <Text style={styles.passwordLabel}>Senha antiga</Text>
-              <View style={styles.passwordInputContainer}>
+        {activeView === 'dataOverlay' && (
+          <View style={styles.formOverlay}>
+            <View style={styles.formContent}>
+              <Text style={styles.formTitle}>Alterar dados Pessoais</Text>
+              <Text style={styles.formLabel}>Nome</Text>
+              <View style={styles.formInputContainer}>
+              <TextInput
+                  style={styles.formInput}
+                  value={userName}
+                  onChangeText={setUserName}
+                  placeholder="Seu nome"
+                  placeholderTextColor="#888"
+                />
+              </View>
+              <Text style={styles.formLabel}>CPF</Text>
+              <View style={styles.formInputContainer}>
+                <TextInputMask
+                  type={'cpf'}
+                  style={styles.formInput}
+                  value={userCPF ?? ''}
+                  onChangeText={setUserCPF}
+                  placeholder={userCPF ?? '000.000.000-00'}
+                  placeholderTextColor="#888"
+                />
+              </View>
+              <Text style={styles.formLabel}>Email</Text>
+              <View style={styles.formInputContainer}>
                 <TextInput
-                  style={styles.passwordInput}
+                  style={styles.formInput}
+                  value={userEmail ?? ''}
+                  onChangeText={setUserEmail}
+                  placeholder={userEmail ?? 'seu@email.aqui'}
+                  placeholderTextColor="#888"
+                />
+              </View>
+              
+              <View style={styles.formButtonContainer}>
+                <TouchableOpacity style={styles.formButton} onPress={handleConfirmDataChange}>
+                  <Text style={styles.formButtonText}>Confirmar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.formButton} onPress={toggleDataView}>
+                  <Text style={styles.formButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {activeView === 'passwordOverlay' && (
+          <View style={styles.formOverlay}>
+            <View style={styles.formContent}>
+              <Text style={styles.formTitle}>Alterar senha</Text>
+              <Text style={styles.formLabel}>Senha antiga</Text>
+              <View style={styles.formInputContainer}>
+                <TextInput
+                  style={styles.formInput}
                   value={oldPassword}
                   onChangeText={setOldPassword}
                   secureTextEntry={!showOldPassword}
@@ -166,10 +273,10 @@ const Sidemenu = () => {
                   )}
                 </TouchableOpacity>
               </View>
-              <Text style={styles.passwordLabel}>Senha nova</Text>
-              <View style={styles.passwordInputContainer}>
+              <Text style={styles.formLabel}>Senha nova</Text>
+              <View style={styles.formInputContainer}>
                 <TextInput
-                  style={styles.passwordInput}
+                  style={styles.formInput}
                   value={newPassword}
                   onChangeText={setNewPassword}
                   secureTextEntry={!showNewPassword}
@@ -187,10 +294,10 @@ const Sidemenu = () => {
                   )}
                 </TouchableOpacity>
               </View>
-              <Text style={styles.passwordLabel}>Confirmar Senha</Text>
-              <View style={styles.passwordInputContainer}>
+              <Text style={styles.formLabel}>Confirmar Senha</Text>
+              <View style={styles.formInputContainer}>
                 <TextInput
-                  style={styles.passwordInput}
+                  style={styles.formInput}
                   value={confirmPassword}
                   onChangeText={setConfirmPassword}
                   secureTextEntry={!showConfirmPassword}
@@ -208,12 +315,60 @@ const Sidemenu = () => {
                   )}
                 </TouchableOpacity>
               </View>
-              <View style={styles.passwordButtonContainer}>
-                <TouchableOpacity style={styles.passwordButton} onPress={togglePasswordView}>
-                  <Text style={styles.passwordButtonText}>Cancelar</Text>
+              <View style={styles.formButtonContainer}>
+                <TouchableOpacity style={styles.formButton} onPress={handleConfirmPasswordChange}>
+                  <Text style={styles.formButtonText}>Confirmar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.passwordButton} onPress={handleConfirmPasswordChange}>
-                  <Text style={styles.passwordButtonText}>Confirmar</Text>
+                <TouchableOpacity style={styles.formButton} onPress={togglePasswordView}>
+                  <Text style={styles.formButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {activeView === 'favOverlay' && (
+          <View style={styles.formOverlay}>
+            <View style={styles.formContent}>
+              <Text style={styles.formTitle}>Alterar dados Pessoais</Text>
+              <Text style={styles.formLabel}>Nome</Text>
+              <View style={styles.formInputContainer}>
+              <TextInput
+                  style={styles.formInput}
+                  value={userName}
+                  onChangeText={setUserName}
+                  placeholder="Seu nome"
+                  placeholderTextColor="#888"
+                />
+              </View>
+              <Text style={styles.formLabel}>CPF</Text>
+              <View style={styles.formInputContainer}>
+                <TextInputMask
+                  type={'cpf'}
+                  style={styles.formInput}
+                  value={userCPF ?? ''}
+                  onChangeText={setUserCPF}
+                  placeholder={userCPF ?? '000.000.000-00'}
+                  placeholderTextColor="#888"
+                />
+              </View>
+              <Text style={styles.formLabel}>Email</Text>
+              <View style={styles.formInputContainer}>
+                <TextInput
+                  style={styles.formInput}
+                  value={userEmail ?? ''}
+                  onChangeText={setUserEmail}
+                  placeholder={userEmail ?? 'seu@email.aqui'}
+                  placeholderTextColor="#888"
+                />
+              </View>
+              
+              <View style={styles.formButtonContainer}>
+                <TouchableOpacity style={styles.formButton} onPress={handleConfirmDataChange}>
+                  <Text style={styles.formButtonText}>Confirmar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.formButton} onPress={toggleFavView}>
+                  <Text style={styles.formButtonText}>Cancelar</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -322,31 +477,31 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
 
-  passwordOverlay: {
+  formOverlay: {
     backgroundColor: Colors.black,
   },
-  passwordContent: {
+  formContent: {
     paddingTop: 10,
     paddingHorizontal: 30,
     borderRadius: 0,
     width: '100%',
     height: '100%',
   },
-  passwordTitle: {
+  formTitle: {
     fontSize: 28,
     marginBottom: 20,
     color: Colors.white,
   },
-  passwordLabel: {
+  formLabel: {
     fontSize: 16,
     marginBottom: 5,
     color: Colors.white,
   },
-  passwordInputContainer: {
+  formInputContainer: {
     flexDirection: 'row',
     marginBottom: 15,
   },
-  passwordInput: {
+  formInput: {
     height: 50,
     width: '100%',
     borderBottomColor: '#ccc',
@@ -359,12 +514,12 @@ const styles = StyleSheet.create({
     right: 20,
     top: 15,
   },
-  passwordButtonContainer: {
+  formButtonContainer: {
     flexDirection: 'column',
     marginTop: 20,
     width: '100%',
   },
-  passwordButton: {
+  formButton: {
     height: 50,
     width: '100%',
     backgroundColor: '#242424',
@@ -375,7 +530,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  passwordButtonText: {
+  formButtonText: {
     color: Colors.white,
     fontSize: 16,
   },

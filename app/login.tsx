@@ -13,8 +13,6 @@ interface User {
   email: string;
   IDplano: string;
   dt_venc: string;
-  status: Boolean;
-  dt_ult_pagamento: string;
   img64: string;
 }
 
@@ -45,9 +43,19 @@ const Login = () => {
           await AsyncStorage.setItem('userId', user.id);
           await AsyncStorage.setItem('userName', user.nome);
           await AsyncStorage.setItem('userCPF', user.CPF);
+          await AsyncStorage.setItem('userEmail', user.email);
           await AsyncStorage.setItem('IDplano', user.IDplano);
           await AsyncStorage.setItem('dt_venc', user.dt_venc);
           await AsyncStorage.setItem('img64', user.img64);
+
+          await AsyncStorage.setItem('planoName', 'Lite');
+          await AsyncStorage.setItem('valorPlano', '14,90');
+          await AsyncStorage.setItem('qtGastos', '3');
+          await AsyncStorage.setItem('qtMoedasFav', '2');
+          await AsyncStorage.setItem('intervaloMoedas', '30');
+          await AsyncStorage.setItem('intervaloCriptos', '30');
+          await AsyncStorage.setItem('pevisaoRenda', '3');
+          await AsyncStorage.setItem('graficosPlus', 'sim');
 
           router.push('/');
         } else {
