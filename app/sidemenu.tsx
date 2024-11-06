@@ -138,7 +138,7 @@ const Sidemenu = () => {
         const cpf = await AsyncStorage.getItem('userCPF');
         const email = await AsyncStorage.getItem('userEmail');
         const image = await AsyncStorage.getItem('img64');
-        const plan = await AsyncStorage.getItem('IDplano');
+        const plan = await AsyncStorage.getItem('userPlanoName');
 
         setUserNameGlobal(name);
         setUserCPFGlobal(cpf);
@@ -162,7 +162,7 @@ const Sidemenu = () => {
                 <ChevronLeft width={40} height={40} color={Colors.white} />
               </TouchableOpacity>
               <View style={styles.profileInfo}>
-                {userImageGlobal && <Image source={{ uri: `data:image/jpeg;base64,${userImageGlobal}` }} style={styles.image} />}
+                {userImageGlobal && <Image source={{ uri: `${userImageGlobal}` }} style={styles.image} />}
                 <View style={styles.textContainer}>
                   {userNameGlobal && <Text style={styles.name}>{userNameGlobal}</Text>}
                   {userPlanGlobal && <Text style={styles.plan}>Membro {userPlanGlobal}</Text>}
@@ -190,12 +190,7 @@ const Sidemenu = () => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.logoutButton} onPress={async () => {
-              await AsyncStorage.removeItem('userId');
-              await AsyncStorage.removeItem('userName');
-              await AsyncStorage.removeItem('userCPF');
-              await AsyncStorage.removeItem('userEmail');
-              await AsyncStorage.removeItem('img64');
-              await AsyncStorage.removeItem('IDplano');
+              await AsyncStorage.clear();
               router.push('/login');
             }}>
               <Text style={styles.logoutText}>Sair</Text>

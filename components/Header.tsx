@@ -44,7 +44,7 @@ const Header = () => {
         <View style={styles.userInfoWrapper}>
           <TouchableOpacity onPress={() => router.push('/sidemenu')}>
           <Image
-              source={{ uri: `data:image/jpeg;base64,${userImage}` }}
+              source={{ uri: `${userImage}` }}
               style={styles.userImg}
             />
           </TouchableOpacity>

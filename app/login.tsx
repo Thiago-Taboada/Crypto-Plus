@@ -4,19 +4,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import Colors from '@/constants/Colors';
 import { TextInputMask } from 'react-native-masked-text';
-import users from '@/data/user.json'; 
 
-interface User {
-  id: string;
+interface Plano {
+  id: number;
+  graficos_avancados: boolean;
+  intervalo_cambio_criptomoedas: string;
+  intervalo_cambio_moedas: string;
   nome: string;
-  CPF: string;
-  email: string;
-  IDplano: string;
-  dt_venc: string;
-  img64: string;
+  previsao_renda: number;
+  qt_tipos_gastos: number;
+  valor: number;
 }
-
-const usersTyped: User[] = users as User[];
 
 const Login = () => {
   const [cpf, setCpf] = useState('');
@@ -37,25 +35,50 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       if (cpf.length === 14 && password.length > 0) {
-        const user = usersTyped.find(user => user.CPF === cpf);
+        const response = await fetch('http://3.17.66.110/api/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            cpf: cpf,
+            password: password,
+          }),
+        });
 
-        if (user) {
+        if (response.ok) {
+          const user = await response.json();
+
           await AsyncStorage.setItem('userId', user.id);
-          await AsyncStorage.setItem('userName', user.nome);
-          await AsyncStorage.setItem('userCPF', user.CPF);
+          await AsyncStorage.setItem('userName', user.name);
+          await AsyncStorage.setItem('userCPF', user.cpf);
           await AsyncStorage.setItem('userEmail', user.email);
-          await AsyncStorage.setItem('IDplano', user.IDplano);
-          await AsyncStorage.setItem('dt_venc', user.dt_venc);
-          await AsyncStorage.setItem('img64', user.img64);
+          await AsyncStorage.setItem('IDplano', user.id_plano.toString());
+          await AsyncStorage.setItem('img64', user.image_b64);
 
-          await AsyncStorage.setItem('planoName', 'Lite');
-          await AsyncStorage.setItem('valorPlano', '14,90');
-          await AsyncStorage.setItem('qtGastos', '3');
-          await AsyncStorage.setItem('qtMoedasFav', '2');
-          await AsyncStorage.setItem('intervaloMoedas', '30');
-          await AsyncStorage.setItem('intervaloCriptos', '30');
-          await AsyncStorage.setItem('pevisaoRenda', '3');
-          await AsyncStorage.setItem('graficosPlus', 'sim');
+          const planosResponse = await fetch('http://3.17.66.110/api/planos');
+          if (planosResponse.ok) {
+            const planosData: { status: string; data: Plano[] } = await planosResponse.json();
+            for (const plano of planosData.data) {
+              await AsyncStorage.setItem(`planoID${plano.id}`, JSON.stringify(plano));
+            }
+            const userPlano = planosData.data.find((plano: Plano) => plano.id === user.id_plano);
+            if (userPlano) {
+              await AsyncStorage.setItem('userPlanoName', userPlano.nome);
+              await AsyncStorage.setItem('userValorPlano', userPlano.valor.toString());
+              await AsyncStorage.setItem('userQtGastos', userPlano.qt_tipos_gastos.toString());
+              await AsyncStorage.setItem('userQtMoedasFav', userPlano.qt_tipos_gastos.toString());
+              await AsyncStorage.setItem('userIntervaloMoedas', userPlano.intervalo_cambio_moedas);
+              await AsyncStorage.setItem('userIntervaloCriptos', userPlano.intervalo_cambio_criptomoedas);
+              await AsyncStorage.setItem('userPevisaoRenda', userPlano.previsao_renda.toString());
+              await AsyncStorage.setItem('userGraficosPlus', userPlano.graficos_avancados ? 'sim' : 'não');
+            }
+          } else {
+            console.error('Error al obtener los planos');
+            setErrorMessage('Ocorreu um erro. Tente novamente.');
+            setModalVisible(true);
+            return;
+          }
 
           router.push('/');
         } else {
@@ -67,7 +90,7 @@ const Login = () => {
         setModalVisible(true);
       }
     } catch (error) {
-      console.error('Error durante o login:', error);
+      console.error('Error durante el login:', error);
       setErrorMessage('Ocorreu um erro. Tente novamente.');
       setModalVisible(true);
     }
