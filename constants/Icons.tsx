@@ -17,6 +17,10 @@ import ChevronLeft from "@/assets/icons/chevron-left.svg"
 import TransferAlt from "@/assets/icons/transfer-alt.svg"
 import Globe from "@/assets/icons/globe.svg"
 import Plus from "@/assets/icons/plus.svg"
+import Wallet from "@/assets/icons/wallet.svg"
+import Sync from "@/assets/icons/sync.svg"
+import LineChart from "@/assets/icons/line-chart.svg"
+import Calendar from "@/assets/icons/calendar.svg"
 
 export {
   DollarIcon,
@@ -38,4 +42,8 @@ export {
   TransferAlt,
   Globe,
   Plus,
+  Wallet,
+  Sync,
+  LineChart,
+  Calendar
 };

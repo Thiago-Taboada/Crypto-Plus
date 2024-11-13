@@ -3,7 +3,7 @@ import { Tabs } from "expo-router";
 import { View } from "react-native";
 import Colors from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
-import { HomeHeart, TransferAlt, Globe } from "@/constants/Icons";
+import { HomeHeart, TransferAlt, Globe, Wallet } from "@/constants/Icons";
 
 const Layout = () => {
   return (
@@ -45,6 +45,22 @@ const Layout = () => {
                 }}
               >
                 <HomeHeart width={22} height={22} color={color} />
+              </View>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="carteira"
+          options={{
+            tabBarIcon: ({ color, size, focused }) => (
+              <View
+                style={{
+                  padding: 12,
+                  borderRadius: 30,
+                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
+                }}
+              >
+                <Wallet width={22} height={22} color={color} />
               </View>
             ),
           }}
