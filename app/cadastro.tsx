@@ -77,12 +77,32 @@ const Cadastro = () => {
         hasErrors = true;
         newErrors.cpf = !validateCPF(cpf);
         newErrors.email = !validateEmail(email);
-      }
-
-      if (!hasErrors) {
-        console.log("Passo 1 ok");
-        // Adicionar aqui lógica para o passo 1
-        setStep(2);
+      } else if (validateCPF(cpf)) {
+        fetch(`http://3.17.66.110/api/cpfUsed?cpf=${cpf.replace(/\D/g, '')}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.inUse) {
+              setErrorMessage('CPF associado a uma conta existente');
+              setModalVisible(true);
+              hasErrors = true;
+              newErrors.cpf = true;
+            } else {
+              // nenhum erro entao ta ok
+              if (!hasErrors) {
+                console.log("Passo 1 ok");
+                setStep(2);
+              }
+            }
+          })
+          .catch(error => {
+            console.error("Conection error:", error);
+            setErrorMessage('Erro de conexão. Tente novamente.');
+            setModalVisible(true);
+            hasErrors = true;
+          });
       }
     } else if (step === 2) {
       if (!validateName(name)) {
@@ -107,10 +127,33 @@ const Cadastro = () => {
       }
 
       if (!hasErrors) {
-        console.log("Passo 2 ok");
-        // Adicionar aqui lógica para o passo 1
-        Alert.alert("Cadastro bem-sucedido", "Você foi registrado com sucesso!");
-        router.push('/login');
+        fetch("http://3.17.66.110/api/register", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: name,
+            password: password,
+            password_confirmation: confirmPassword,
+            cpf: cpf,
+            email: email
+          })
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.status === "success") {
+              console.log("Passo 2 ok");
+              Alert.alert("Cadastro bem-sucedido", "Você foi registrado com sucesso!");
+              router.push('/login');
+            } else {
+              setErrorMessage('Erro de conexão. Tente novamente.');
+              setModalVisible(true);
+            }
+          })
+          .catch(error => {
+            console.error("Erro ao registrar:", error);
+            setErrorMessage('Erro no servidor. Tente novamente.');
+            setModalVisible(true);
+          });
       }
     }
 

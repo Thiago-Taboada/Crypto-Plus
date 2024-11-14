@@ -6,6 +6,8 @@ import Colors from '@/constants/Colors';
 import { ChevronLeft, ShowText, HideText } from '@/constants/Icons';
 import { TextInputMask } from 'react-native-masked-text';
 import AuthGuard from '@/components/AuthGuard';
+import Planos from '@/components/Planos';
+import { Picker } from '@react-native-picker/picker';
 
 const Sidemenu = () => {
   const [userNameGlobal, setUserNameGlobal] = useState<string | null>(null);
@@ -13,18 +15,22 @@ const Sidemenu = () => {
   const [userEmailGlobal, setUserEmailGlobal] = useState<string | null>(null);
   const [userImageGlobal, setUserImageGlobal] = useState<string | null>(null);
   const [userPlanGlobal, setUserPlanGlobal] = useState<string | null>(null);
+  const [userMoedaGlobal, setUserMoedaGlobal] = useState<string | null>(null);
 
-  const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay' | 'dataOverlay' | 'favOverlay'>('menu');
+  const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay' | 'dataOverlay' | 'favOverlay' | 'planosOverlay'>('menu');
 
   const [userName, setUserName] = useState('');
   const [userCPF, setUserCPF] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [userMoeda, setUserMoeda] = useState('');
 
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const [selectedPlano, setSelectedPlano] = useState('');
+
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [modalVisibleErrorMsg, setModalVisibleErrorMsg] = useState(false);
@@ -54,54 +60,151 @@ const Sidemenu = () => {
   const validateOldPassword = (password: string) => {
     return password.length >= 8;
   };
+  
 
-  const handleConfirmPasswordChange = () => {
-    if (!validateOldPassword(oldPassword)) {
-      openModalErrorMsg('Informe a sua senha atual.');
-      return;
+  const handleConfirmPasswordChange = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      const storedPassword = await AsyncStorage.getItem('userPassword');
+  
+      if (!validateOldPassword(oldPassword)) {
+        openModalErrorMsg('Informe a sua senha atual.');
+        return;
+      }
+      if (oldPassword !== storedPassword) {
+        openModalErrorMsg('A senha atual está incorreta.');
+        return;
+      }
+  
+      if (!validatePassword(newPassword)) {
+        openModalErrorMsg('A senha deve ter no minimo:');
+        return;
+      }
+  
+      if (newPassword !== confirmPassword) {
+        openModalErrorMsg('As senhas não correspondem.');
+        return;
+      }
+      fetch(`http://3.17.66.110/api/user/${userId}/update-password`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: newPassword })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === "Senha atualizado com sucesso") {
+            openModalErrorMsg("Senha alterada com sucesso!");
+            AsyncStorage.setItem('userPassword', newPassword);
+            setActiveView('menu');
+          } else {
+            openModalErrorMsg("Erro ao alterar a senha.");
+            console.error("Error response:", data);
+          }
+        })
+        .catch(error => {
+          console.error("Erro ao alterar a senha:", error);
+          openModalErrorMsg("Erro de conexão. Tente novamente.");
+        });
+    } catch (error) {
+      console.error("Erro ao obter o ID do usuário:", error);
+      openModalErrorMsg("Erro ao tentar recuperar o ID do usuário.");
     }
-    if (!validatePassword(newPassword)) {
-      openModalErrorMsg('A senha deve ter no minimo:');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      openModalErrorMsg('As senhas não correspondem.');
-      return;
-    }
-
-    // codigo e logica aqui para alterar senha
-
-    setActiveView('menu');
   };
+  
 
   //Dados pessoais:
-  const handleConfirmDataChange = () => {
+  const handleConfirmDataChange = async () => {
     const nameValidationRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ\s]{5,}$/;
     const emailValidationRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const cpfValidationRegex = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+    
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      
+      if (!nameValidationRegex.test(userName)) {
+        openModalErrorMsg('O nome deve ter pelo menos 5 letras.');
+        return;
+      }
+      if (!emailValidationRegex.test(userEmail)) {
+        openModalErrorMsg('Email inválido.');
+        return;
+      }
   
-    if (!nameValidationRegex.test(userName)) {
-      openModalErrorMsg('O nome deve ter pelo menos 5 letras.');
-      return;
+      const nameResponse = await fetch(`http://3.17.66.110/api/user/${userId}/update-name`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: userName })
+      });
+      const emailResponse = await fetch(`http://3.17.66.110/api/user/${userId}/update-email`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail })
+      });
+
+      const nameData = await nameResponse.json();
+      const emailData = await emailResponse.json();
+  
+      if (nameData.message === "Nome atualizado com sucesso" && emailData.message === "E-mail atualizado com sucesso") {
+        openModalErrorMsg('Nome e email atualizados com sucesso!');
+        AsyncStorage.setItem('userName', userName);
+        AsyncStorage.setItem('userEmail', userEmail);
+        setActiveView('menu');
+      } else {
+        openModalErrorMsg("Erro de conexão. Tente novamente.");
+      }
+      
+    } catch (error) {
+      console.error("Erro ao atualizar os dados:", error);
+      openModalErrorMsg("Erro de conexão. Tente novamente.");
     }
-  
-    if (!emailValidationRegex.test(userEmail)) {
-      openModalErrorMsg('Email inválido.');
-      return;
-    }
-  
-    if (!cpfValidationRegex.test(userCPF)) {
-      openModalErrorMsg('CPF inválido.');
-      return;
-    }
-  
-    // Logica para salvar aqui
-  
-    setActiveView('menu');
   };
+
+  // Moeda Fav
+  const handleConfirmMoedaChange = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
   
+      if (!userMoeda) {
+        openModalErrorMsg("Selecione uma moeda favorita.");
+        return;
+      }
+      const response = await fetch(`http://3.17.66.110/api/user/${userId}/update-moeda`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          moeda: userMoeda,
+        }),
+      });
+  
+      //const data = await response.json();
+      // if (response.ok && data.message === "Moeda atualizada com sucesso") {
+      //   openModalErrorMsg("Moeda atualizada com sucesso!");
+      //   setActiveView('menu');
+      // } else {
+      //   openModalErrorMsg("Erro ao atualizar a moeda.");
+      // }
+      if (response.status !== 200) {
+        openModalErrorMsg("Erro ao atualizar a moeda.");
+      } else {
+        openModalErrorMsg("Moeda atualizada com sucesso!");
+        AsyncStorage.setItem('userMoeda', userMoeda);
+        setActiveView('menu');
+      }
+    } catch (error) {
+      console.error("Erro ao atualizar a moeda:", error);
+      openModalErrorMsg("Erro no servidor. Tente novamente.");
+    }
+  };
 
+  // Planos
+  const handleConfirmPlanosChange = async (selectedPlano: string | null) => {
+      const userId = await AsyncStorage.getItem('userId');
+  
+      console.log("ID plano seleciodado: ", selectedPlano);
+  };
 
+  
   // Manage Active view
   const togglePasswordView = () => {
     if (activeView === 'menu') {
@@ -129,6 +232,14 @@ const Sidemenu = () => {
       setActiveView('menu');
     }
   };
+  const togglePlanosView = () => {
+    if (activeView === 'menu') {
+      syncWithGlobalValues();
+      setActiveView('planosOverlay');
+    } else {
+      setActiveView('menu');
+    }
+  };
   const router = useRouter();
 
   useEffect(() => {
@@ -139,12 +250,14 @@ const Sidemenu = () => {
         const email = await AsyncStorage.getItem('userEmail');
         const image = await AsyncStorage.getItem('img64');
         const plan = await AsyncStorage.getItem('userPlanoName');
+        const moeda = await AsyncStorage.getItem('userPlanoName');
 
         setUserNameGlobal(name);
         setUserCPFGlobal(cpf);
         setUserEmailGlobal(email);
         setUserImageGlobal(image);
         setUserPlanGlobal(plan);
+        setUserMoedaGlobal(moeda);
       } catch (error) {
         console.error('Erro ao recuperar os dados do usuário:', error);
       }
@@ -179,7 +292,7 @@ const Sidemenu = () => {
             <TouchableOpacity style={styles.option} onPress={toggleFavView}>
               <Text style={styles.optionText}>Moeda Favorita</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <TouchableOpacity style={styles.option} onPress={togglePlanosView}>
               <Text style={styles.optionText}>Gerenciar assinatura</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.option} onPress={() => { }}>
@@ -216,9 +329,9 @@ const Sidemenu = () => {
               <View style={styles.formInputContainer}>
                 <TextInputMask
                   type={'cpf'}
+                  editable={false}
                   style={styles.formInput}
                   value={userCPF ?? ''}
-                  onChangeText={setUserCPF}
                   placeholder={userCPF ?? '000.000.000-00'}
                   placeholderTextColor="#888"
                 />
@@ -325,41 +438,39 @@ const Sidemenu = () => {
         {activeView === 'favOverlay' && (
           <View style={styles.formOverlay}>
             <View style={styles.formContent}>
-              <Text style={styles.formTitle}>Alterar dados Pessoais</Text>
-              <Text style={styles.formLabel}>Nome</Text>
+              <Text style={styles.formTitle}>Alterar Moeda Favorita</Text>
+              <Text style={styles.formLabel}>Selecione a moeda favorita</Text>
+              
               <View style={styles.formInputContainer}>
-              <TextInput
-                  style={styles.formInput}
-                  value={userName}
-                  onChangeText={setUserName}
-                  placeholder="Seu nome"
-                  placeholderTextColor="#888"
-                />
-              </View>
-              <Text style={styles.formLabel}>CPF</Text>
-              <View style={styles.formInputContainer}>
-                <TextInputMask
-                  type={'cpf'}
-                  style={styles.formInput}
-                  value={userCPF ?? ''}
-                  onChangeText={setUserCPF}
-                  placeholder={userCPF ?? '000.000.000-00'}
-                  placeholderTextColor="#888"
-                />
-              </View>
-              <Text style={styles.formLabel}>Email</Text>
-              <View style={styles.formInputContainer}>
-                <TextInput
-                  style={styles.formInput}
-                  value={userEmail ?? ''}
-                  onChangeText={setUserEmail}
-                  placeholder={userEmail ?? 'seu@email.aqui'}
-                  placeholderTextColor="#888"
-                />
+                <Picker
+                  selectedValue={userMoeda}
+                  onValueChange={setUserMoeda}
+                  style={styles.formInputPicker}
+                >
+                  <Picker.Item label="USD - Dólar dos Estados Unidos" value="USD" />
+                  <Picker.Item label="BRL - Real Brasileiro" value="BRL" />
+                  <Picker.Item label="CAD - Dólar Canadense" value="CAD" />
+                  <Picker.Item label="MXN - Peso Mexicano" value="MXN" />
+                  <Picker.Item label="ARS - Peso Argentino" value="ARS" />
+                  <Picker.Item label="EUR - Euro" value="EUR" />
+                  <Picker.Item label="GBP - Libra Esterlina" value="GBP" />
+                  <Picker.Item label="JPY - Iene Japonês" value="JPY" />
+                  <Picker.Item label="AUD - Dólar Australiano" value="AUD" />
+                  <Picker.Item label="CHF - Franco Suíço" value="CHF" />
+                  <Picker.Item label="CNY - Yuan Chinês" value="CNY" />
+                  <Picker.Item label="INR - Rúpia Indiana" value="INR" />
+                  <Picker.Item label="ZAR - Rand Sul-Africano" value="ZAR" />
+                  <Picker.Item label="BRL - Real Brasileiro" value="BRL" />
+                  <Picker.Item label="RUB - Rublo Russo" value="RUB" />
+                  <Picker.Item label="KRW - Won Sul-Coreano" value="KRW" />
+                  <Picker.Item label="SEK - Coroa Sueca" value="SEK" />
+                  <Picker.Item label="NOK - Coroa Norueguesa" value="NOK" />
+                  <Picker.Item label="PLN - Zloty Polonês" value="PLN" />
+                </Picker>
               </View>
               
               <View style={styles.formButtonContainer}>
-                <TouchableOpacity style={styles.formButton} onPress={handleConfirmDataChange}>
+                <TouchableOpacity style={styles.formButton} onPress={handleConfirmMoedaChange}>
                   <Text style={styles.formButtonText}>Confirmar</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.formButton} onPress={toggleFavView}>
@@ -369,6 +480,24 @@ const Sidemenu = () => {
             </View>
           </View>
         )}
+
+        {activeView === 'planosOverlay' && (
+          <View style={styles.formOverlay}>
+            <View style={styles.formContent}>
+              <Text style={styles.formTitle}>Planos</Text>
+              <Planos onSelectPlano={setSelectedPlano} /> {/* Pasa la función como prop */}
+              <View style={styles.formButtonContainer}>
+                <TouchableOpacity style={styles.formButton} onPress={() => handleConfirmPlanosChange(selectedPlano)}>
+                  <Text style={styles.formButtonText}>Confirmar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.formButton} onPress={togglePlanosView}>
+                  <Text style={styles.formButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+
 
         {/* MODAL ERROR MSG */}
         <Modal
@@ -503,6 +632,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingHorizontal: 10,
     color: Colors.white,
+  },
+  formInputPicker: {
+    height: 50,
+    width: '100%',
+    color: Colors.white,
+    backgroundColor: Colors.black
   },
   iconContainer: {
     position: 'absolute',
