@@ -13,6 +13,7 @@ import Colors from "@/constants/Colors";
 import { Plus } from "@/constants/Icons";
 import CryptoTypes from '@/data/cryptoTypes.json';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type ColorKeys = 
   'black' | 'gray' | 'white' | 'tintColor' | 'blue' | 'red' | 
@@ -104,10 +105,46 @@ const CryptoBlock: React.FC<CryptoBlockProps> = ({ cryptoList }) => {
     setColorPickerVisible(false);
   };
 
-  const saveCrypto = () => {
-    // Implementar lógica de guardado
-    setModalVisible(false);
-  };
+  const saveCrypto = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      const formattedQuantity = quantity.replace(',', '.');
+
+      const cryptoData = {
+        uid: userId,
+        cripto: {
+          Nome: name,
+          Quantidade: formattedQuantity,
+          Cor: selectedColor,
+          codigo: code
+        }
+      };
+      
+      const response = await fetch('http://3.17.66.110/api/addCripto', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cryptoData)
+      });
+      
+      if (response.ok) {
+        const responseData = await response.json();
+        
+        if (responseData.status === 'success') {
+          console.log(`Criptomoneda adicionada, ID: ${responseData.ID}`);
+          setModalVisible(false);
+        } else {
+          console.error('Erro: Bad Response');
+        }
+      } else {
+        console.error('Erro durante o envío');
+      }
+      
+    } catch (error) {
+      console.error('Erro de conexão', error);
+    }
+  };  
 
   const renderItem: ListRenderItem<CryptoType | null> = ({ item, index }) => {
     if (index === 0) {

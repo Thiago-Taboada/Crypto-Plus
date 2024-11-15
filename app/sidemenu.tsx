@@ -63,8 +63,7 @@ const Sidemenu = () => {
       alert('Es necesario dar permiso para acceder a la galería');
       return;
     }
-  
-    // Abrir el picker de imágenes
+
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -101,13 +100,11 @@ const Sidemenu = () => {
       formData.append('image', blob, `profileImage.${fileExtension}`);
       console.log("formData configurado correctamente con imagen adjunta.");
   
-      // Realizar la solicitud sin el encabezado Content-Type
       const res = await fetch(`http://3.17.66.110/api/user/${userId}/update-image`, {
-        method: 'POST',
+        method: 'POST', //VERIFICAR DEPOIS
         body: formData,
       });
   
-      // Verificar el estado de la respuesta
       console.log("Estado de la respuesta HTTP:", res.status);
   
       if (res.ok) {
@@ -255,14 +252,7 @@ const Sidemenu = () => {
           moeda: userMoeda,
         }),
       });
-  
-      //const data = await response.json();
-      // if (response.ok && data.message === "Moeda atualizada com sucesso") {
-      //   openModalErrorMsg("Moeda atualizada com sucesso!");
-      //   setActiveView('menu');
-      // } else {
-      //   openModalErrorMsg("Erro ao atualizar a moeda.");
-      // }
+      
       if (response.status !== 200) {
         openModalErrorMsg("Erro ao atualizar a moeda.");
       } else {
@@ -321,6 +311,7 @@ const Sidemenu = () => {
   };
   const router = useRouter();
 
+  
   useEffect(() => {
     const getUserData = async () => {
       try {
@@ -358,8 +349,6 @@ const Sidemenu = () => {
                 <TouchableOpacity onPress={pickImage}>
                   <Image source={{ uri: `${userImageGlobal}` }} style={styles.image} />
                 </TouchableOpacity>
-
-                {/* {userImageGlobal && <Image source={{ uri: `${userImageGlobal}` }} style={styles.image} />} */}
                 <View style={styles.textContainer}>
                   {userNameGlobal && <Text style={styles.name}>{userNameGlobal}</Text>}
                   {userPlanGlobal && <Text style={styles.plan}>Membro {userPlanGlobal}</Text>}

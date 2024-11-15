@@ -3,18 +3,19 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Colors from '@/constants/Colors';
 
 interface Plano {
-  id: number;
-  graficos_avancados: boolean;
-  intervalo_cambio_criptomoedas: number;
-  intervalo_cambio_moedas: number;
-  nome: string;
-  previsao_renda: number;
-  qt_tipos_gastos: number;
-  valor: number;
+  id: string;
+  exchange_coin: string;
+  exchange_cryptos: string;
+  grafics: boolean;
+  income_forecast: number;
+  name: string;
+  qtd_types_expenses: number;
+  qtd_types_profits: number;
+  value: number;
 }
 
 interface PlanosProps {
-  onSelectPlano: (id: string) => void; // Prop para pasar el ID del plano seleccionado
+  onSelectPlano: (id: string) => void;
 }
 
 const Planos: React.FC<PlanosProps> = ({ onSelectPlano }) => {
@@ -22,31 +23,28 @@ const Planos: React.FC<PlanosProps> = ({ onSelectPlano }) => {
   const [selectedPlano, setSelectedPlano] = useState<string | null>(null);
 
   useEffect(() => {
-    // Obtener el ID del plano seleccionado desde localStorage
     const idPlano = localStorage.getItem("IDplano");
-
-    // Obtener los planes desde localStorage (planoID0, planoID1, ...)
     const storedPlanos: Plano[] = [];
-    let i = 0;
-    while (localStorage.getItem(`planoID${i}`)) {
-      const plano = localStorage.getItem(`planoID${i}`);
-      if (plano) {
-        storedPlanos.push(JSON.parse(plano));
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith("planoID")) {
+        const plano = localStorage.getItem(key);
+        if (plano) {
+          storedPlanos.push(JSON.parse(plano));
+        }
       }
-      i++;
     }
 
-    // Ordenar los planos por ID
-    storedPlanos.sort((a, b) => a.id - b.id);
+    storedPlanos.sort((a, b) => a.value - b.value);
 
-    // Establecer el estado
     setPlanos(storedPlanos);
     setSelectedPlano(idPlano);
   }, []);
 
-  const handleSelectPlano = (id: number) => {
-    setSelectedPlano(id.toString());
-    onSelectPlano(id.toString());  // Pasar el ID al componente principal
+  const handleSelectPlano = (id: string) => {
+    setSelectedPlano(id);
+    onSelectPlano(id);
   };
 
   return (
@@ -55,30 +53,33 @@ const Planos: React.FC<PlanosProps> = ({ onSelectPlano }) => {
         <TouchableOpacity
           key={plano.id}
           style={[styles.planoContainer, {
-            backgroundColor: plano.id === Number(selectedPlano) ? Colors.tintColor : Colors.gray,
+            backgroundColor: plano.id === selectedPlano ? Colors.tintColor : Colors.gray,
           }]}
           onPress={() => handleSelectPlano(plano.id)}
         >
-          <Text style={styles.planoTitle}>{plano.nome}</Text>
+          <Text style={styles.planoTitle}>{plano.name}</Text>
           <Text style={styles.planoDetail}>
-            Previsão da Carteira: {plano.previsao_renda} Meses
+            Previsão da Carteira: {plano.income_forecast} Meses
           </Text>
           <Text style={styles.planoDetail}>
-            Gráficos Avançados: {plano.graficos_avancados ? "Sim" : "Não"}
+            Gráficos Avançados: {plano.grafics ? "Sim" : "Não"}
           </Text>
           <Text style={styles.planoDetail}>
-            Sincronização de Criptomoedas: {plano.intervalo_cambio_criptomoedas} min
+            Sincronização de Criptomoedas: {plano.exchange_cryptos} seg
           </Text>
           <Text style={styles.planoDetail}>
-            Sincronização de Moedas: {plano.intervalo_cambio_moedas} min
+            Sincronização de Moedas: {plano.exchange_coin} seg
           </Text>
           <Text style={styles.planoDetail}>
-            Tipos de Gastos: {plano.qt_tipos_gastos}
+            Tipos de Despesas: {plano.qtd_types_expenses}
+          </Text>
+          <Text style={styles.planoDetail}>
+            Tipos de Entradas: {plano.qtd_types_profits}
           </Text>
 
           <View style={styles.planoValueContainer}>
             <Text style={styles.planoValue}>
-              {plano.valor === 0 ? "Gratuito" : `R$${plano.valor}`}
+              {plano.value === 0 ? "Gratuito" : `R$${plano.value}`}
             </Text>
           </View>
         </TouchableOpacity>

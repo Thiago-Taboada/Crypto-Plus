@@ -7,15 +7,17 @@ import { TextInputMask } from 'react-native-masked-text';
 import { ShowText, HideText } from "@/constants/Icons";
 
 interface Plano {
-  id: number;
-  graficos_avancados: boolean;
-  intervalo_cambio_criptomoedas: string;
-  intervalo_cambio_moedas: string;
-  nome: string;
-  previsao_renda: number;
-  qt_tipos_gastos: number;
-  valor: number;
+  id: string;
+  exchange_coin: string; 
+  exchange_cryptos: string;
+  grafics: boolean;
+  income_forecast: number;
+  name: string;
+  qtd_types_expenses: number;
+  qtd_types_profits: number;
+  value: number;
 }
+
 
 const Login = () => {
   const [cpf, setCpf] = useState('');
@@ -51,10 +53,10 @@ const Login = () => {
             password: password,
           }),
         });
-
+  
         if (response.ok) {
           const user = await response.json();
-
+  
           await AsyncStorage.setItem('userId', user.id);
           await AsyncStorage.setItem('userName', user.name);
           await AsyncStorage.setItem('userCPF', user.cpf);
@@ -63,23 +65,26 @@ const Login = () => {
           await AsyncStorage.setItem('img64', user.image_b64);
           await AsyncStorage.setItem('userPassword', password);
           await AsyncStorage.setItem('hideValues', 'false');
-
+  
           const planosResponse = await fetch('http://3.17.66.110/api/planos');
           if (planosResponse.ok) {
-            const planosData: { status: string; data: Plano[] } = await planosResponse.json();
-            for (const plano of planosData.data) {
+            const planosData: { status: string; data: { [key: string]: Plano } } = await planosResponse.json();
+            
+            for (const key in planosData.data) {
+              const plano = planosData.data[key];
               await AsyncStorage.setItem(`planoID${plano.id}`, JSON.stringify(plano));
             }
-            const userPlano = planosData.data.find((plano: Plano) => plano.id === user.id_plano);
+  
+            const userPlano = planosData.data[user.id_plano];
             if (userPlano) {
-              await AsyncStorage.setItem('userPlanoName', userPlano.nome);
-              await AsyncStorage.setItem('userValorPlano', userPlano.valor.toString());
-              await AsyncStorage.setItem('userQtGastos', userPlano.qt_tipos_gastos.toString());
-              await AsyncStorage.setItem('userQtMoedasFav', userPlano.qt_tipos_gastos.toString());
-              await AsyncStorage.setItem('userIntervaloMoedas', userPlano.intervalo_cambio_moedas.toString());
-              await AsyncStorage.setItem('userIntervaloCriptos', userPlano.intervalo_cambio_criptomoedas.toString());
-              await AsyncStorage.setItem('userPevisaoRenda', userPlano.previsao_renda.toString());
-              await AsyncStorage.setItem('userGraficosPlus', userPlano.graficos_avancados ? 'sim' : 'não');
+              await AsyncStorage.setItem('userPlanoName', userPlano.name);
+              await AsyncStorage.setItem('userValorPlano', userPlano.value.toString());
+              await AsyncStorage.setItem('userQtGastos', userPlano.qtd_types_expenses.toString());
+              await AsyncStorage.setItem('userQtMoedasFav', userPlano.qtd_types_profits.toString());
+              await AsyncStorage.setItem('userIntervaloMoedas', userPlano.exchange_coin.toString());
+              await AsyncStorage.setItem('userIntervaloCriptos', userPlano.exchange_cryptos.toString());
+              await AsyncStorage.setItem('userPevisaoRenda', userPlano.income_forecast.toString());
+              await AsyncStorage.setItem('userGraficosPlus', userPlano.grafics ? 'sim' : 'não');
             }
           } else {
             console.error('Erro ao obtener os planos');
@@ -87,7 +92,7 @@ const Login = () => {
             setModalVisible(true);
             return;
           }
-
+  
           router.push('/');
         } else {
           setErrorMessage('CPF ou senha inválidos.');
@@ -103,6 +108,7 @@ const Login = () => {
       setModalVisible(true);
     }
   };
+  
 
   return (
     <View style={styles.container}>

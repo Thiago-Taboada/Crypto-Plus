@@ -24,7 +24,7 @@ const Carteira: React.FC = () => {
       <View style={[styles.container, { paddingTop: 60 }]}>
         <ScrollView showsVerticalScrollIndicator={false}>
           <Text style={{ color: Colors.white, fontSize: 24, fontWeight: '700', marginBottom: 10, marginTop: 10 }}>
-            Saldo
+            Entradas do próximo mês:
           </Text>
 
           <View style={styles.balanceContainer}>
