@@ -9,7 +9,7 @@ const Page = () => {
     <>
       <Stack.Screen options={{ headerShown: false }} />
       <View style={styles.container}>
-        <Text style={styles.text}>Page1</Text>
+        <Text style={styles.text}>Tela Criptos</Text>
       </View>
     </>
   )

@@ -9,6 +9,7 @@ import AuthGuard from '@/components/AuthGuard';
 import Planos from '@/components/Planos';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from '@react-navigation/native';
 
 const Sidemenu = () => {
   const [userNameGlobal, setUserNameGlobal] = useState<string | null>(null);
@@ -36,6 +37,8 @@ const Sidemenu = () => {
 
   const [modalVisibleErrorMsg, setModalVisibleErrorMsg] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+
+  const navigation = useNavigation();
 
   const syncWithGlobalValues = () => {
     if (userNameGlobal) setUserName(userNameGlobal);
@@ -347,7 +350,7 @@ const Sidemenu = () => {
         {activeView === 'menu' && (
           <View style={styles.menu}>
             <View style={styles.header}>
-              <TouchableOpacity onPress={() => router.push('/')}>
+              <TouchableOpacity onPress={() => navigation.goBack()}>
                 <ChevronLeft width={40} height={40} color={Colors.white} />
               </TouchableOpacity>
               

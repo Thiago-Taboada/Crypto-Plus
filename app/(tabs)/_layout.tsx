@@ -3,7 +3,7 @@ import { Tabs } from "expo-router";
 import { View } from "react-native";
 import Colors from "@/constants/Colors";
 import { StatusBar } from "expo-status-bar";
-import { HomeHeart, TransferAlt, Globe, Wallet } from "@/constants/Icons";
+import { HomeHeart, Globe, Wallet, Customize } from "@/constants/Icons";
 
 const Layout = () => {
   return (
@@ -36,7 +36,7 @@ const Layout = () => {
         <Tabs.Screen
           name="index"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
+            tabBarIcon: ({ color, focused }) => (
               <View
                 style={{
                   padding: 12,
@@ -52,7 +52,7 @@ const Layout = () => {
         <Tabs.Screen
           name="carteira"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
+            tabBarIcon: ({ color, focused }) => (
               <View
                 style={{
                   padding: 12,
@@ -66,9 +66,9 @@ const Layout = () => {
           }}
         />
         <Tabs.Screen
-          name="transactions"
+          name="cripto"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
+            tabBarIcon: ({ color, focused }) => (
               <View
                 style={{
                   padding: 12,
@@ -82,9 +82,9 @@ const Layout = () => {
           }}
         />
         <Tabs.Screen
-          name="profile"
+          name="all"
           options={{
-            tabBarIcon: ({ color, size, focused }) => (
+            tabBarIcon: ({ color, focused }) => (
               <View
                 style={{
                   padding: 12,
@@ -92,7 +92,7 @@ const Layout = () => {
                   backgroundColor: focused ? Colors.tintColor : Colors.gray,
                 }}
               >
-                <TransferAlt width={22} height={22} color={color} />
+                <Customize width={22} height={22} color={color} />
               </View>
             ),
           }}

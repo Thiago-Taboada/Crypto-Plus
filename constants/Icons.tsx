@@ -21,6 +21,8 @@ import Wallet from "@/assets/icons/wallet.svg"
 import Sync from "@/assets/icons/sync.svg"
 import LineChart from "@/assets/icons/line-chart.svg"
 import Calendar from "@/assets/icons/calendar.svg"
+import Dashboard from "@/assets/icons/dashboard.svg"
+import Customize from "@/assets/icons/customize.svg"
 
 export {
   DollarIcon,
@@ -45,5 +47,7 @@ export {
   Wallet,
   Sync,
   LineChart,
-  Calendar
+  Calendar,
+  Dashboard,
+  Customize
 };

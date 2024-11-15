@@ -23,27 +23,20 @@ const Carteira: React.FC = () => {
     <AuthGuard>
       <View style={[styles.container, { paddingTop: 60 }]}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <Text style={{ color: Colors.white, fontSize: 16 }}>
-            Minha <Text style={{ fontWeight: '700' }}>Carteira</Text>
+          <Text style={{ color: Colors.white, fontSize: 24, fontWeight: '700', marginBottom: 10, marginTop: 10 }}>
+            Saldo
           </Text>
 
           <View style={styles.balanceContainer}>
-            {/* Columna 1: Título de saldo */}
-            <View style={styles.balanceTitleContainer}>
-              <Text style={{ color: Colors.white, fontSize: 24, fontWeight: '700' }}>Saldo</Text>
-            </View>
-
-            {/* Columna 2: Valores de saldo, refresh y botón de cambio de moneda */}
-            <View style={styles.balanceValuesContainer}>
-              <Text style={{ color: Colors.white, fontSize: 22 }}>R$ 7955,00</Text>
-              <Text style={{ color: Colors.white, fontSize: 22 }}>U$ 1325,80</Text>
+            <View style={styles.balanceValuesRow}>
+              <View>
+                <Text style={{ color: Colors.white, fontSize: 22 }}>R$ 7955,00</Text>
+                <Text style={{ color: Colors.white, fontSize: 22 }}>U$ 1325,80</Text>
+              </View>
               <View style={styles.refreshContainer}>
                 <Sync width={22} height={22} color={Colors.white} />
                 <Text style={{ color: Colors.white, marginLeft: 5 }}>30 seg</Text>
               </View>
-              <TouchableOpacity style={styles.favButton}>
-                <Text style={styles.buttonText}>Trocar moeda Favorita</Text>
-              </TouchableOpacity>
             </View>
           </View>
 
@@ -61,7 +54,6 @@ const Carteira: React.FC = () => {
             </View>
           </TouchableOpacity>
 
-          {/* Sección de Despesas e Ingresos */}
           <Text style={{ color: Colors.white, fontSize: 16, marginTop: 20 }}>
             Minhas <Text style={{ fontWeight: '700' }}>Despesas</Text>
           </Text>
@@ -104,32 +96,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   balanceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     marginVertical: 20,
   },
-  balanceTitleContainer: {
-    flex: 1, // Columna 1: Para el título
-  },
-  balanceValuesContainer: {
-    flex: 1, // Columna 2: Para los valores, refresh y botón de cambio de moneda
-    alignItems: 'flex-end',
+  balanceValuesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   refreshContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5, // Ajusta la posición para que esté cerca de los valores
-  },
-  favButton: {
-    borderWidth: 2,
-    borderColor: "#666",
-    borderRadius: 10,
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    marginTop: 10, // Espacio entre el botón y el refresco
-    alignSelf: 'stretch', // Para que el botón use el ancho completo de la columna
+    marginLeft: 20,
   },
   actionButton: {
     borderWidth: 2,

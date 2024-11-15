@@ -55,14 +55,14 @@ const Login = () => {
         if (response.ok) {
           const user = await response.json();
 
-          // Guardar los datos del usuario en AsyncStorage
           await AsyncStorage.setItem('userId', user.id);
           await AsyncStorage.setItem('userName', user.name);
           await AsyncStorage.setItem('userCPF', user.cpf);
           await AsyncStorage.setItem('userEmail', user.email);
           await AsyncStorage.setItem('IDplano', user.id_plano.toString());
           await AsyncStorage.setItem('img64', user.image_b64);
-          await AsyncStorage.setItem('userPassword', password);  // Guardar la contraseña aquí
+          await AsyncStorage.setItem('userPassword', password);
+          await AsyncStorage.setItem('hideValues', 'false');
 
           const planosResponse = await fetch('http://3.17.66.110/api/planos');
           if (planosResponse.ok) {

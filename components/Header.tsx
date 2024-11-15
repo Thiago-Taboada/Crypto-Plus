@@ -2,13 +2,14 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Colors from "@/constants/Colors";
-import { BellNotificationIcon } from "@/constants/Icons";
+import { ShowText, HideText } from "@/constants/Icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 
 const Header = () => {
   const [userName, setUserName] = useState<string | null>(null);
   const [userImage, setUserImage] = useState<string | null>(null);
+  const [hideValues, setHideValues] = useState<boolean>(false);
   const router = useRouter();
 
   const getUserData = async () => {
@@ -16,22 +17,18 @@ const Header = () => {
       const name = await AsyncStorage.getItem('userName');
       const image = await AsyncStorage.getItem('img64');
 
-      if (name !== null) {
-        setUserName(name);
-      } else {
-        console.log('Nome do usuário não encontrado.');
-        setUserName('Usuário');
-      }
-
-      if (image !== null) {
-        setUserImage(image);
-      } else {
-        console.log('Imagem do usuário não encontrada.');
-      }
+      setUserName(name ?? 'Usuário');
+      setUserImage(image);
     } catch (error) {
       console.error('Erro ao recuperar os dados do usuário:', error);
       setUserName('Usuário');
     }
+  };
+
+  const toggleHideValues = async () => {
+    const newHideValues = !hideValues;
+    setHideValues(newHideValues);
+    await AsyncStorage.setItem('hideValues', JSON.stringify(newHideValues));
   };
 
   useEffect(() => {
@@ -43,7 +40,7 @@ const Header = () => {
       <View style={styles.wrapper}>
         <View style={styles.userInfoWrapper}>
           <TouchableOpacity onPress={() => router.push('/sidemenu')}>
-          <Image
+            <Image
               source={{ uri: `${userImage}` }}
               style={styles.userImg}
             />
@@ -54,10 +51,12 @@ const Header = () => {
             </Text>
           </View>
         </View>
-        <TouchableOpacity onPress={() => {}} style={styles.btnWrapper}>
-          <Text style={styles.btnText}>
-            <BellNotificationIcon width={22} height={22} color={Colors.white} />
-          </Text>
+        <TouchableOpacity onPress={toggleHideValues} style={styles.btnWrapper}>
+          {hideValues ? (
+            <ShowText width={26} height={26} color={Colors.white} />
+          ) : (
+            <HideText width={26} height={26} color={Colors.white} />
+          )}
         </TouchableOpacity>
       </View>
     </SafeAreaView>
