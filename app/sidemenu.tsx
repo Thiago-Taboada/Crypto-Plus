@@ -8,6 +8,7 @@ import { TextInputMask } from 'react-native-masked-text';
 import AuthGuard from '@/components/AuthGuard';
 import Planos from '@/components/Planos';
 import { Picker } from '@react-native-picker/picker';
+import * as ImagePicker from 'expo-image-picker';
 
 const Sidemenu = () => {
   const [userNameGlobal, setUserNameGlobal] = useState<string | null>(null);
@@ -50,6 +51,81 @@ const Sidemenu = () => {
   const closeModalErrorMsg = () => {
     setModalVisibleErrorMsg(false);
   };
+
+  // Image
+  const pickImage = async () => {
+    // Pedir permisos para acceder a la galería
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (permissionResult.granted === false) {
+      alert('Es necesario dar permiso para acceder a la galería');
+      return;
+    }
+  
+    // Abrir el picker de imágenes
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+  
+    if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
+      const uri = pickerResult.assets[0].uri; // Acceder al URI de la primera imagen seleccionada
+      uploadImage(uri); // Llamar a la función de subida
+    }
+  };
+  
+  const uploadImage = async (uri: string) => {
+    console.log("Iniciando upload de imagen...");
+    
+    const userId = await AsyncStorage.getItem('userId');
+    console.log("userId obtenido:", userId);
+  
+    const formData = new FormData();
+  
+    try {
+      console.log("URI de la imagen:", uri);
+  
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      console.log("Blob obtenido:", blob);
+  
+      const mimeType = blob.type;
+      const fileExtension = mimeType.split('/')[1];
+      console.log("Tipo MIME de la imagen:", mimeType);
+      console.log("Extensión de la imagen:", fileExtension);
+  
+      formData.append('image', blob, `profileImage.${fileExtension}`);
+      console.log("formData configurado correctamente con imagen adjunta.");
+  
+      // Realizar la solicitud sin el encabezado Content-Type
+      const res = await fetch(`http://3.17.66.110/api/user/${userId}/update-image`, {
+        method: 'POST',
+        body: formData,
+      });
+  
+      // Verificar el estado de la respuesta
+      console.log("Estado de la respuesta HTTP:", res.status);
+  
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Respuesta del servidor:", data);
+  
+        if (data.message === 'Imagem atualizada com sucesso') {
+          alert('Imagem atualizada com sucesso!');
+        } else {
+          alert('Erro ao atualizar a imagem.');
+        }
+      } else {
+        console.log("Error en la respuesta HTTP, código de estado:", res.status);
+        alert('Erro ao atualizar a imagem. Verifique o código de status no console.');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar a imagem:', error);
+      alert('Erro de conexão. Tente novamente.');
+    }
+  };
+  
 
   //Password:
   const validatePassword = (password: string) => {
@@ -274,8 +350,13 @@ const Sidemenu = () => {
               <TouchableOpacity onPress={() => router.push('/')}>
                 <ChevronLeft width={40} height={40} color={Colors.white} />
               </TouchableOpacity>
+              
               <View style={styles.profileInfo}>
-                {userImageGlobal && <Image source={{ uri: `${userImageGlobal}` }} style={styles.image} />}
+                <TouchableOpacity onPress={pickImage}>
+                  <Image source={{ uri: `${userImageGlobal}` }} style={styles.image} />
+                </TouchableOpacity>
+
+                {/* {userImageGlobal && <Image source={{ uri: `${userImageGlobal}` }} style={styles.image} />} */}
                 <View style={styles.textContainer}>
                   {userNameGlobal && <Text style={styles.name}>{userNameGlobal}</Text>}
                   {userPlanGlobal && <Text style={styles.plan}>Membro {userPlanGlobal}</Text>}
@@ -637,7 +718,7 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
     color: Colors.white,
-    backgroundColor: Colors.black
+    backgroundColor: Colors.gray
   },
   iconContainer: {
     position: 'absolute',

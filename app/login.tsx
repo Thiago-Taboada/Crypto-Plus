@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import Colors from '@/constants/Colors';
 import { TextInputMask } from 'react-native-masked-text';
+import { ShowText, HideText } from "@/constants/Icons";
 
 interface Plano {
   id: number;
@@ -22,6 +23,11 @@ const Login = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({
+    cpf: false,
+    password: false,
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -70,8 +76,8 @@ const Login = () => {
               await AsyncStorage.setItem('userValorPlano', userPlano.valor.toString());
               await AsyncStorage.setItem('userQtGastos', userPlano.qt_tipos_gastos.toString());
               await AsyncStorage.setItem('userQtMoedasFav', userPlano.qt_tipos_gastos.toString());
-              await AsyncStorage.setItem('userIntervaloMoedas', userPlano.intervalo_cambio_moedas);
-              await AsyncStorage.setItem('userIntervaloCriptos', userPlano.intervalo_cambio_criptomoedas);
+              await AsyncStorage.setItem('userIntervaloMoedas', userPlano.intervalo_cambio_moedas.toString());
+              await AsyncStorage.setItem('userIntervaloCriptos', userPlano.intervalo_cambio_criptomoedas.toString());
               await AsyncStorage.setItem('userPevisaoRenda', userPlano.previsao_renda.toString());
               await AsyncStorage.setItem('userGraficosPlus', userPlano.graficos_avancados ? 'sim' : 'não');
             }
@@ -115,14 +121,30 @@ const Login = () => {
             value={cpf}
             onChangeText={setCpf}
           />
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             placeholder="Senha"
             placeholderTextColor="#fff"
             secureTextEntry
             value={password}
             onChangeText={setPassword}
-          />
+          /> */}
+          <View style={styles.passwordContainer}>
+              <TextInput
+                style={[styles.input, errors.password && styles.inputError]}
+                placeholder="Senha"
+                placeholderTextColor="#fff"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={setPassword}
+              />
+              <TouchableOpacity
+                style={styles.passwordToggle}
+                onPress={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <HideText width={24} height={24} color="#fff" /> : <ShowText width={24} height={24} color="#fff" />}
+              </TouchableOpacity>
+            </View>
           <TouchableOpacity onPress={() => router.push('/cadastro')}>
             <Text style={styles.infoText}>Ainda não possui uma conta? <Text style={styles.infoTextBold}>Cadastre-se</Text></Text>
           </TouchableOpacity>
@@ -163,6 +185,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.black,
     paddingHorizontal: '10%',
   },
+  passwordContainer: {
+    position: 'relative',
+  },
+  passwordToggle: {
+    position: 'absolute',
+    right: 10,
+    top: 15,
+  },
   innerContainer: {
     width: '100%',
     maxWidth: 500,
@@ -193,6 +223,9 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     color: "#fff",
     paddingHorizontal: 10,
+  },
+  inputError: {
+    borderBottomColor: 'red',
   },
   button: {
     height: 50,
