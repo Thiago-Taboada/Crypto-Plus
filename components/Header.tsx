@@ -25,6 +25,12 @@ const Header = () => {
     }
   };
 
+  const listenForImageChange = () => {
+    AsyncStorage.getItem('img64').then(image => {
+      setUserImage(image);
+    });
+  };
+
   const toggleHideValues = async () => {
     const newHideValues = !hideValues;
     setHideValues(newHideValues);
@@ -33,6 +39,11 @@ const Header = () => {
 
   useEffect(() => {
     getUserData();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(listenForImageChange, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (

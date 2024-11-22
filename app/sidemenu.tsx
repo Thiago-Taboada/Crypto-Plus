@@ -10,6 +10,7 @@ import Planos from '@/components/Planos';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
+import { Buffer } from 'buffer'; 
 
 const Sidemenu = () => {
   const [userNameGlobal, setUserNameGlobal] = useState<string | null>(null);
@@ -19,7 +20,7 @@ const Sidemenu = () => {
   const [userPlanGlobal, setUserPlanGlobal] = useState<string | null>(null);
   const [userMoedaGlobal, setUserMoedaGlobal] = useState<string | null>(null);
 
-  const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay' | 'dataOverlay' | 'favOverlay' | 'planosOverlay'>('menu');
+  const [activeView, setActiveView] = useState<'menu' | 'passwordOverlay' | 'dataOverlay' | 'favOverlay' | 'planosOverlay' | 'termosOverlay' >('menu');
 
   const [userName, setUserName] = useState('');
   const [userCPF, setUserCPF] = useState('');
@@ -57,10 +58,9 @@ const Sidemenu = () => {
 
   // Image
   const pickImage = async () => {
-    // Pedir permisos para acceder a la galería
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (permissionResult.granted === false) {
-      alert('Es necesario dar permiso para acceder a la galería');
+      alert('Falla ao abrir a galeria');
       return;
     }
 
@@ -72,52 +72,59 @@ const Sidemenu = () => {
     });
   
     if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
-      const uri = pickerResult.assets[0].uri; // Acceder al URI de la primera imagen seleccionada
-      uploadImage(uri); // Llamar a la función de subida
+      const uri = pickerResult.assets[0].uri;
+      uploadImage(uri);
     }
   };
   
   const uploadImage = async (uri: string) => {
-    console.log("Iniciando upload de imagen...");
+    console.log("Iniciando o upload da imagem...");
     
     const userId = await AsyncStorage.getItem('userId');
-    console.log("userId obtenido:", userId);
-  
-    const formData = new FormData();
+    console.log("userId obtido:", userId);
   
     try {
-      console.log("URI de la imagen:", uri);
-  
+      console.log("URI da imagem:", uri);
+    
       const response = await fetch(uri);
       const blob = await response.blob();
-      console.log("Blob obtenido:", blob);
-  
+      console.log("Blob obtido:", blob);
+    
       const mimeType = blob.type;
       const fileExtension = mimeType.split('/')[1];
-      console.log("Tipo MIME de la imagen:", mimeType);
-      console.log("Extensión de la imagen:", fileExtension);
-  
-      formData.append('image', blob, `profileImage.${fileExtension}`);
-      console.log("formData configurado correctamente con imagen adjunta.");
+      console.log("Tipo MIME da imagem:", mimeType);
+      console.log("Extensão da imagem:", fileExtension);
+      
+      const base64Image = await blobToBase64(blob);
+      console.log("Imagem convertida para base64:", base64Image.substring(0, 30) + '...');
+    
+      const jsonBody = {
+        image: `${base64Image}`,
+      };
   
       const res = await fetch(`http://3.17.66.110/api/user/${userId}/update-image`, {
-        method: 'POST', //VERIFICAR DEPOIS
-        body: formData,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonBody),
       });
-  
-      console.log("Estado de la respuesta HTTP:", res.status);
-  
+    
+      console.log("Status da resposta HTTP:", res.status);
+    
       if (res.ok) {
         const data = await res.json();
-        console.log("Respuesta del servidor:", data);
-  
-        if (data.message === 'Imagem atualizada com sucesso') {
+        console.log("Resposta do servidor:", data);
+    
+        if (data.original?.status === 'success') {
           alert('Imagem atualizada com sucesso!');
+          AsyncStorage.setItem('img64', base64Image);
+          setUserImageGlobal(base64Image);
         } else {
-          alert('Erro ao atualizar a imagem.');
+          alert('Erro ao atualizar a imagem. Verifique a resposta do servidor.');
         }
       } else {
-        console.log("Error en la respuesta HTTP, código de estado:", res.status);
+        console.log("Erro na resposta HTTP, código de status:", res.status);
         alert('Erro ao atualizar a imagem. Verifique o código de status no console.');
       }
     } catch (error) {
@@ -126,7 +133,15 @@ const Sidemenu = () => {
     }
   };
   
-
+  const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(blob);
+    });
+  };
+  
   //Password:
   const validatePassword = (password: string) => {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).{8,}$/;
@@ -304,7 +319,15 @@ const Sidemenu = () => {
   const togglePlanosView = () => {
     if (activeView === 'menu') {
       syncWithGlobalValues();
-      setActiveView('planosOverlay');
+      setActiveView('planosOverlay' );
+    } else {
+      setActiveView('menu');
+    }
+  };
+  const toggleTermosView = () => {
+    if (activeView === 'menu') {
+      syncWithGlobalValues();
+      setActiveView('termosOverlay');
     } else {
       setActiveView('menu');
     }
@@ -371,7 +394,7 @@ const Sidemenu = () => {
             <TouchableOpacity style={styles.option} onPress={() => { }}>
               <Text style={styles.optionText}>Exportar/Importar dados</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.option} onPress={() => { }}>
+            <TouchableOpacity style={styles.option} onPress={toggleTermosView}>
               <Text style={styles.optionText}>Termos de uso</Text>
             </TouchableOpacity>
 
@@ -554,7 +577,7 @@ const Sidemenu = () => {
           </View>
         )}
 
-        {activeView === 'planosOverlay' && (
+        {activeView === 'planosOverlay'  && (
           <View style={styles.formOverlay}>
             <View style={styles.formContent}>
               <Text style={styles.formTitle}>Planos</Text>
@@ -570,6 +593,40 @@ const Sidemenu = () => {
             </View>
           </View>
         )}
+
+        {activeView === 'termosOverlay' && (
+          <View style={styles.formOverlay}>
+            <View style={styles.formContent}>
+              <Text style={styles.formTitle}>Termos de uso do Crypto-Plus</Text>
+              <ScrollView>
+                <Text style={styles.overlayText}>
+                  Bem-vindo ao Crypto-plus! Este termo de uso estabelece as condições para utilização do nosso software. Leia atentamente antes de prosseguir, pois, ao usar o Crypto-plus, você concorda integralmente com as regras aqui apresentadas.
+                  {'\n\n'}
+                  O Crypto-plus é um software desenvolvido para integrar informações financeiras de diferentes contas bancárias em um único local. Com ele, você pode visualizar gastos, rendas e transações realizadas em diversas instituições, de maneira prática e centralizada. Além disso, o Crypto-plus oferece funcionalidades adicionais, como acesso às cotações de criptomoedas e de moedas estrangeiras, permitindo que você acompanhe os valores atualizados dessas moedas diretamente pelo aplicativo.
+                  {'\n\n'}
+                  Para funcionar, o software acessa suas contas bancárias de forma segura e somente com sua permissão, por meio de integrações autorizadas com as plataformas das instituições financeiras. Nosso compromisso com a privacidade e proteção dos seus dados segue os princípios da Lei Geral de Proteção de Dados (Lei 13.709/2018). O Crypto-plus coleta apenas os dados indispensáveis para o funcionamento do software, utilizando essas informações exclusivamente para consolidar e exibir os dados das contas bancárias autorizadas por você. Não comercializamos nem compartilhamos os seus dados com terceiros sem seu consentimento. Além disso, adotamos medidas rigorosas de segurança para proteger suas informações contra acessos não autorizados.
+                  {'\n\n'}
+                  Você tem o direito de acessar, corrigir ou excluir os dados coletados a qualquer momento, assim como revogar sua permissão de uso do software. Caso deseje exercer algum desses direitos, basta entrar em contato conosco pelo e-mail suporte@crypto-plus.com.
+                  {'\n\n'}
+                  Ao utilizar o Crypto-plus, você se compromete a manter em sigilo suas credenciais bancárias e a usar o software exclusivamente para fins pessoais. É fundamental que você informe imediatamente qualquer atividade suspeita relacionada ao seu uso do aplicativo. Por outro lado, o Crypto-plus se compromete a proteger seus dados com as melhores práticas de segurança, garantir a transparência no funcionamento do software e notificá-lo sobre qualquer alteração relevante nos termos de uso ou na política de privacidade.
+                  {'\n\n'}
+                  Importante esclarecer que o Crypto-plus atua como um facilitador e não realiza transações financeiras em seu nome. Também não nos responsabilizamos por erros nas informações fornecidas pelas instituições bancárias, pelas cotações exibidas de criptomoedas ou moedas estrangeiras, nem por danos causados pelo uso indevido do software ou por acessos não autorizados decorrentes de negligência do usuário.
+                  {'\n\n'}
+                  Você pode encerrar o uso do Crypto-plus a qualquer momento, solicitando a exclusão da sua conta e dos dados associados ao serviço. O software poderá atualizar este Termo de Uso sempre que necessário, seja para aprimorar sua experiência ou atender a exigências legais. Qualquer mudança será comunicada com antecedência razoável.
+                  {'\n\n'}
+                  Se tiver dúvidas, solicitações ou problemas, entre em contato conosco pelo e-mail suporte@crypto-plus.com. Ao continuar usando o Crypto-plus, você declara que leu, entendeu e concorda com este Termo de Uso.
+                </Text>
+              </ScrollView>
+
+              <View style={styles.formButtonContainer}>
+                <TouchableOpacity style={styles.formButton} onPress={toggleTermosView}>
+                  <Text style={styles.formButtonText}>Aceitar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+
 
 
         {/* MODAL ERROR MSG */}
@@ -673,6 +730,11 @@ const styles = StyleSheet.create({
     color: Colors.red,
     fontSize: 20,
   },
+  overlayText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: Colors.white,
+  },
 
   formOverlay: {
     backgroundColor: Colors.black,
@@ -720,6 +782,7 @@ const styles = StyleSheet.create({
   formButtonContainer: {
     flexDirection: 'column',
     marginTop: 20,
+    marginBottom: 20,
     width: '100%',
   },
   formButton: {

@@ -66,7 +66,7 @@ const Login = () => {
           await AsyncStorage.setItem('userPassword', password);
           await AsyncStorage.setItem('hideValues', 'false');
   
-          const planosResponse = await fetch('http://3.17.66.110/api/planos');
+          const planosResponse = await fetch('http://3.17.66.110/api/planos/all');
           if (planosResponse.ok) {
             const planosData: { status: string; data: { [key: string]: Plano } } = await planosResponse.json();
             
