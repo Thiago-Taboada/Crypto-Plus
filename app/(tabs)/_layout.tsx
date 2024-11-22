@@ -81,22 +81,6 @@ const Layout = () => {
             ),
           }}
         />
-        <Tabs.Screen
-          name="all"
-          options={{
-            tabBarIcon: ({ color, focused }) => (
-              <View
-                style={{
-                  padding: 12,
-                  borderRadius: 30,
-                  backgroundColor: focused ? Colors.tintColor : Colors.gray,
-                }}
-              >
-                <Customize width={22} height={22} color={color} />
-              </View>
-            ),
-          }}
-        />
       </Tabs>
       <StatusBar style="light" />
     </>
