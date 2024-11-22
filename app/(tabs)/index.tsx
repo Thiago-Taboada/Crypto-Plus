@@ -7,7 +7,6 @@ import CryptoBlock from '@/components/CryptoBlock';
 import GastoBlock from '@/components/GastoBlock';
 import IncomeBlock from '@/components/IncomeBlock';
 import SpendingBlock from '@/components/SpendingBlock';
-import GastoList from '@/data/gastos.json';
 import incomeList from '@/data/income.json';
 import spendingList from '@/data/spending.json';
 import Colors from '@/constants/Colors';
@@ -21,10 +20,27 @@ interface Crypto {
   codigo: string;
 }
 
+interface TipoGasto {
+  id: string;
+  cor: string;
+  description: string;
+  icon: string;
+  name: string;
+}
+
+interface GastoTipoAPIResponse {
+  [key: string]: {
+    cor: string;
+    description: string;
+    icon: string;
+    name: string;
+  };
+}
+
 const Index: React.FC = () => {
   const [cryptoList, setCryptoList] = useState<Crypto[]>([]);
+  const [gastoTipos, setGastoTipos] = useState<TipoGasto[]>([]);
 
-  // Definimos fetchCryptos para que pueda ser pasada a los componentes hijos
   const fetchCryptos = async () => {
     try {
       const userId = await AsyncStorage.getItem('userId');
@@ -60,9 +76,50 @@ const Index: React.FC = () => {
     }
   };
 
-  // Llamamos a fetchCryptos cuando el componente se monta
+  const fetchGastoTipos = async () => {
+    try {
+      const userId = await AsyncStorage.getItem('userId');
+      if (!userId) {
+        console.error('Erro: ID do usuário não encontrado');
+        return;
+      }
+
+      const response = await fetch(`http://3.17.66.110/api/gettipo/despesa/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data: GastoTipoAPIResponse = await response.json();
+      console.log("Resposta da API:", data);
+
+      if (response.ok) {
+        if (data) {
+          const gastoTiposArray: TipoGasto[] = Object.entries(data).map(([id, tipo]) => ({
+            id,
+            cor: tipo.cor,
+            description: tipo.description,
+            icon: tipo.icon,
+            name: tipo.name,
+          }));
+
+          setGastoTipos(gastoTiposArray);
+          console.log("Tipos de despesas recebidos:", gastoTiposArray);
+        } else {
+          console.error('Erro: Estrutura de dados inesperada ao obter tipos de despesa');
+        }
+      } else {
+        console.error('Erro: Falha ao realizar a request', response.status);
+      }
+    } catch (error) {
+      console.error('Erro de conexão:', error);
+    }
+  };
+
   useEffect(() => {
     fetchCryptos();
+    fetchGastoTipos();
   }, []);
 
   const pieData = [
@@ -103,9 +160,10 @@ const Index: React.FC = () => {
               />
             </View>
           </View>
-          <GastoBlock gastoList={GastoList} />
+          
+          <GastoBlock tipoGastoList={gastoTipos} fetchGastoTipos={fetchGastoTipos} />
           <Text style={{ color: Colors.white, fontSize: 18 }}>
-                Minhas <Text style={{ fontWeight: '700' }}>Cryptos</Text>
+            Minhas <Text style={{ fontWeight: '700' }}>Cryptos</Text>
           </Text>
           <CryptoBlock cryptoList={cryptoList} fetchCryptos={fetchCryptos} />
           <IncomeBlock incomeList={incomeList} />

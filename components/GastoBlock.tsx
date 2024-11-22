@@ -1,85 +1,154 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Plus } from '@/constants/Icons';
-import gastosData from '@/data/gastosTypes.json';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Colors from '@/constants/Colors';
 
-interface Gasto {
+interface TipoGasto {
     id: string;
-    idTipoGasto: string;
-    nome: string;
-    valor: string;
+    cor: string;
+    description: string;
+    icon: string;
+    name: string;
+}
+
+interface Gasto {
+    appellant: string;
+    dt_init: string;
+    dt_update: string;
+    icon: string;
+    idType: string;
+    idUser: string;
+    name: string;
+    value: number;
 }
 
 interface GastoBlockProps {
-    gastoList: Gasto[];
+    tipoGastoList: TipoGasto[];
+    fetchGastoTipos: () => Promise<void>;
 }
 
-const rgbToLuminance = (r: number, g: number, b: number): number => {
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-};
+const GastoBlock: React.FC<GastoBlockProps> = ({ tipoGastoList, fetchGastoTipos }) => {
+    const [gastosAgrupados, setGastosAgrupados] = useState<{ [key: string]: number }>({});
+    const [totalGastos, setTotalGastos] = useState<number>(0);
 
-const getContrastColor = (backgroundColor: string) => {
-    const r = parseInt(backgroundColor.slice(1, 3), 16);
-    const g = parseInt(backgroundColor.slice(3, 5), 16);
-    const b = parseInt(backgroundColor.slice(5, 7), 16);
+    useEffect(() => {
+        const fetchGastos = async () => {
+            try {
+                const userId = await AsyncStorage.getItem('userId');
+                console.log('User ID:', userId);  // Verificando si el User ID se obtiene correctamente
 
-    const luminance = rgbToLuminance(r, g, b);
-    return luminance < 128 ? '#FFFFFF' : '#000000';
-};
+                if (!userId) {
+                    console.error('Erro: ID do usuário não encontrado');
+                    return;
+                }
 
-const GastoItem: React.FC<{ tipo: { nome: string; total: number; cor: string }; totalGastos: number }> = ({ tipo, totalGastos }) => {
-    const textColor = getContrastColor(tipo.cor);
-    const totalFormatted = tipo.total.toFixed(2).replace('.', ','); // Formato del total
-    const [inteiro, decimal] = totalFormatted.split(','); // Separar la parte entera de los decimales
+                // Aquí está la respuesta simulada que usaremos en lugar de la llamada real.
+                const simulatedResponse = {
+                    success: true,
+                    data: {
+                        "-OCIg4pRXMKZSzxhle9H": {
+                            appellant: "false",
+                            dt_init: "2024-11-22T11:44:47.376259Z",
+                            dt_update: "2024-11-22T11:44:47.376289Z",
+                            icon: "HomeHeart",
+                            idType: "-OCIe6LClliHm8lF-l6l",
+                            idUser: "-OBgX_3On5FN5BOiuS2X",
+                            name: "nome teste",
+                            value: 856.4
+                        },
+                        "-OCIgcozBFOBgd1dhRGD": {
+                            appellant: "tue",
+                            dt_init: "2024-11-22T11:47:10.693789Z",
+                            dt_update: "2024-11-22T11:47:10.693797Z",
+                            icon: "HomeHeart",
+                            idType: "-OCIe6LClliHm8lF-l6l",
+                            idUser: "-OBgX_3On5FN5BOiuS2X",
+                            name: "nome teste22222",
+                            value: 856.4
+                        },
+                        "-OCIj_Qh2oFsxSxcnE6V": {
+                            appellant: "false",
+                            dt_init: "2024-11-22T12:00:03.234968Z",
+                            dt_update: "2024-11-22T12:00:03.234976Z",
+                            icon: "HomeHeart",
+                            idType: "-OCIe6LClliHm8lF-l6l",
+                            idUser: "-OBgX_3On5FN5BOiuS2X",
+                            name: "segundo teste",
+                            value: 256.4
+                        },
+                        "-OCIjiC4XyD1dUyFNVqt": {
+                            appellant: "false",
+                            dt_init: "2024-11-22T12:00:39.170407Z",
+                            dt_update: "2024-11-22T12:00:39.170417Z",
+                            icon: "HomeHeart",
+                            idType: "-OCIiKJYuCSJjtlTnaj4",
+                            idUser: "-OBgX_3On5FN5BOiuS2X",
+                            name: "teste",
+                            value: 16.4
+                        }
+                    }
+                };
 
-    return (
-        <View style={[styles.gastoBlock, { backgroundColor: tipo.cor }]}>
-            <Text style={[styles.gastoName, { color: textColor }]}>{tipo.nome}</Text>
-            <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                <Text style={[styles.gastoValue, { color: textColor, fontWeight: '600' }]}>R$ {inteiro},</Text>
-                <Text style={[styles.gastoValue, { color: textColor, fontSize: 12, fontWeight: '400' }]}>
-                    {decimal}
-                </Text>
-            </View>
-            <View style={styles.gastoPercentageArea}>
-                <Text style={[styles.gastoPercentage, { color: textColor }]}>
-                    {((tipo.total / totalGastos) * 100).toFixed(2)}%
-                </Text>
-            </View>
-        </View>
-    );
-};
+                // Aquí simulamos que recibimos la respuesta y la procesamos
+                const data = simulatedResponse;
+                console.log('Simulated Response data:', data);  // Verificando los datos simulados
 
-const GastoBlock: React.FC<GastoBlockProps> = ({ gastoList }) => {
-    const tiposGasto = gastosData.reduce((acc, tipo) => {
-        acc[tipo.id] = {
-            nome: tipo.nome,
-            total: 0,
-            cor: Colors[tipo.cor] || 'gray',
+                if (data.success && data.data) {
+                    const gastosAgrupadosPorTipo: { [key: string]: number } = {};
+                    let total = 0;
+
+                    // Sumar valores de cada gasto por tipo
+                    Object.values(data.data).forEach((gasto: Gasto) => {
+                        total += gasto.value;  // Sumar al total
+                        if (gastosAgrupadosPorTipo[gasto.idType]) {
+                            gastosAgrupadosPorTipo[gasto.idType] += gasto.value;
+                        } else {
+                            gastosAgrupadosPorTipo[gasto.idType] = gasto.value;
+                        }
+                    });
+
+                    console.log('Grouped gastos:', gastosAgrupadosPorTipo);  // Verificando los gastos agrupados
+                    setTotalGastos(total);  // Establecer el total de todos los gastos
+                    setGastosAgrupados(gastosAgrupadosPorTipo);  // Establecer los gastos agrupados
+                } else {
+                    console.error('Erro: Estrutura de dados inválida ou sem dados encontrados');
+                }
+            } catch (error) {
+                console.error('Erro de conexão:', error);
+            }
         };
-        return acc;
-    }, {} as { [key: string]: { nome: string; total: number; cor: string } });
 
-    gastoList.forEach((gasto) => {
-        const tipo = tiposGasto[gasto.idTipoGasto];
-        if (tipo) {
-            tipo.total += parseFloat(gasto.valor.replace(',', '.'));
-        }
-    });
-
-    const tiposConGastos = Object.entries(tiposGasto).filter(([_, tipo]) => tipo.total > 0);
-    const totalGastos = tiposConGastos.reduce((acc, [_, tipo]) => acc + tipo.total, 0);
+        fetchGastos();
+    }, [fetchGastoTipos]);
 
     return (
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.wrapper}>
                 <View style={styles.addGastoBtn}>
-                    <Plus width={22} height={22} color={"#ccc"} />
+                    <Plus width={22} height={22} color={'#ccc'} />
                 </View>
-                {tiposConGastos.map(([idTipo, tipo]) => (
-                    <GastoItem key={idTipo} tipo={tipo} totalGastos={totalGastos} />
-                ))}
+                {tipoGastoList.map((tipo) => {
+                    const gastoTotal = gastosAgrupados[tipo.id] || 0;
+                    const percentage = totalGastos > 0 ? ((gastoTotal / totalGastos) * 100).toFixed(2) : '0.00';
+
+                    return (
+                        <View
+                            key={tipo.id}
+                            style={[styles.gastoBlock, { backgroundColor: Colors[tipo.cor] || 'gray' }]}
+                        >
+                            <Text style={styles.gastoName}>{tipo.name}</Text>
+                            <Text style={styles.gastoValue}>
+                                R$ {gastoTotal.toFixed(2).replace('.', ',') || '0,00'}
+                            </Text>
+                            <View style={styles.gastoPercentageArea}>
+                                <Text style={styles.gastoPercentage}>
+                                    {percentage}%
+                                </Text>
+                            </View>
+                        </View>
+                    );
+                })}
             </View>
         </ScrollView>
     );
@@ -93,8 +162,8 @@ const styles = StyleSheet.create({
     addGastoBtn: {
         flex: 1,
         borderWidth: 2,
-        borderColor: "#666",
-        borderStyle: "dashed",
+        borderColor: '#666',
+        borderStyle: 'dashed',
         borderRadius: 10,
         marginRight: 20,
         padding: 20,
@@ -107,14 +176,15 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginRight: 20,
         gap: 8,
-        justifyContent: "space-between",
-        alignItems: "flex-start",
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
     },
     gastoName: {
         fontSize: 14,
     },
     gastoValue: {
         fontSize: 16,
+        fontWeight: '600',
     },
     gastoPercentage: {
         fontSize: 14,
@@ -125,6 +195,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         paddingVertical: 3,
         borderRadius: 10,
+        fontWeight: '600',
     },
 });
 
