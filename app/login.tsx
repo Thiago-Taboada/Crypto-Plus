@@ -127,14 +127,6 @@ const Login = () => {
             value={cpf}
             onChangeText={setCpf}
           />
-          {/* <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            placeholderTextColor="#fff"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          /> */}
           <View style={styles.passwordContainer}>
               <TextInput
                 style={[styles.input, errors.password && styles.inputError]}

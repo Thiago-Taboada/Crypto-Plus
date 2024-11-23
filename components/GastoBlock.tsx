@@ -36,14 +36,13 @@ const GastoBlock: React.FC<GastoBlockProps> = ({ tipoGastoList, fetchGastoTipos 
         const fetchGastos = async () => {
             try {
                 const userId = await AsyncStorage.getItem('userId');
-                console.log('User ID:', userId);  // Verificando si el User ID se obtiene correctamente
+                console.log('User ID:', userId);
 
                 if (!userId) {
                     console.error('Erro: ID do usuário não encontrado');
                     return;
                 }
 
-                // Aquí está la respuesta simulada que usaremos en lugar de la llamada real.
                 const simulatedResponse = {
                     success: true,
                     data: {
@@ -62,7 +61,7 @@ const GastoBlock: React.FC<GastoBlockProps> = ({ tipoGastoList, fetchGastoTipos 
                             dt_init: "2024-11-22T11:47:10.693789Z",
                             dt_update: "2024-11-22T11:47:10.693797Z",
                             icon: "HomeHeart",
-                            idType: "-OCIe6LClliHm8lF-l6l",
+                            idType: "-OCIiKJYuCSJjtlTnaj4",
                             idUser: "-OBgX_3On5FN5BOiuS2X",
                             name: "nome teste22222",
                             value: 856.4
@@ -90,17 +89,14 @@ const GastoBlock: React.FC<GastoBlockProps> = ({ tipoGastoList, fetchGastoTipos 
                     }
                 };
 
-                // Aquí simulamos que recibimos la respuesta y la procesamos
                 const data = simulatedResponse;
-                console.log('Simulated Response data:', data);  // Verificando los datos simulados
-
+                console.log('Simulated Response data:', data);
                 if (data.success && data.data) {
                     const gastosAgrupadosPorTipo: { [key: string]: number } = {};
                     let total = 0;
 
-                    // Sumar valores de cada gasto por tipo
                     Object.values(data.data).forEach((gasto: Gasto) => {
-                        total += gasto.value;  // Sumar al total
+                        total += gasto.value;
                         if (gastosAgrupadosPorTipo[gasto.idType]) {
                             gastosAgrupadosPorTipo[gasto.idType] += gasto.value;
                         } else {
@@ -108,9 +104,9 @@ const GastoBlock: React.FC<GastoBlockProps> = ({ tipoGastoList, fetchGastoTipos 
                         }
                     });
 
-                    console.log('Grouped gastos:', gastosAgrupadosPorTipo);  // Verificando los gastos agrupados
-                    setTotalGastos(total);  // Establecer el total de todos los gastos
-                    setGastosAgrupados(gastosAgrupadosPorTipo);  // Establecer los gastos agrupados
+                    console.log('Grouped gastos:', gastosAgrupadosPorTipo);
+                    setTotalGastos(total);
+                    setGastosAgrupados(gastosAgrupadosPorTipo);
                 } else {
                     console.error('Erro: Estrutura de dados inválida ou sem dados encontrados');
                 }
